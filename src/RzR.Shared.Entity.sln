@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36109.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{BCB2B36F-30D2-4B00-802B-52BDB4CB9E0F}"
+	ProjectSection(SolutionItems) = preProject
+		shared\GeneralAssemblyInfo.cs = shared\GeneralAssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E737BE4D-6DFF-4A67-A3D9-2AC58BFBBC07}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XmlFluentValidator", "XmlFluentValidator\XmlFluentValidator.csproj", "{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlValidatorTests", "tests\XmlValidatorTests\XmlValidatorTests.csproj", "{A395EAFD-61DA-4187-8F98-BE7D7A9B4415}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A395EAFD-61DA-4187-8F98-BE7D7A9B4415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A395EAFD-61DA-4187-8F98-BE7D7A9B4415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A395EAFD-61DA-4187-8F98-BE7D7A9B4415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A395EAFD-61DA-4187-8F98-BE7D7A9B4415}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A395EAFD-61DA-4187-8F98-BE7D7A9B4415} = {E737BE4D-6DFF-4A67-A3D9-2AC58BFBBC07}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B5BD8B8-58AD-47B4-B85A-E7242D47B9FE}
+		BuildVersion_BuildVersioningStyle = None.None.Increment.TimeStamp
+		BuildVersion_UpdateAssemblyVersion = True
+		BuildVersion_UpdateFileVersion = True
+		BuildVersion_StartDate = 2022/9/15
+		BuildVersion_AssemblyInfoFilename = shared\GeneralAssemblyInfo.cs
+		BuildVersion_ConfigurationName = Release
+		BuildVersion_UseUniversalClock = True
+	EndGlobalSection
+EndGlobal
