@@ -24,7 +24,10 @@ using DomainCommonExtensions.CommonExtensions;
 using DomainCommonExtensions.DataTypeExtensions;
 using XmlFluentValidator.Abstractions;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Enums.Internal;
+using XmlFluentValidator.Helpers.Internal;
 using XmlFluentValidator.Models;
+using XmlFluentValidator.Models.Message;
 using XmlFluentValidator.Models.Result;
 
 #endregion
@@ -40,27 +43,14 @@ namespace XmlFluentValidator.Rules
     public class XmlValidatorCompositeRule : IXmlValidatorRule
     {
         #region PRIVATE FIELDS
-        
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     The condition custom message.
-        /// </summary>
-        /// =================================================================================================
-        private string _conditionMessage;
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     The default message.
+        ///     (Immutable) the message descriptors.
         /// </summary>
         /// =================================================================================================
-        private string _defaultMessage;
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     The custom message.
-        /// </summary>
-        /// =================================================================================================
-        private string _customMessage;
+        private readonly Dictionary<CompositeRuleMessageDescriptorType, MessageDescriptor> _messageDescriptors
+            = new Dictionary<CompositeRuleMessageDescriptorType, MessageDescriptor>();
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -88,7 +78,7 @@ namespace XmlFluentValidator.Rules
         ///     (Immutable) the steps.
         /// </summary>
         /// =================================================================================================
-        private readonly IEnumerable<Func<XDocument, IEnumerable<XmlValidationFailureResult>>> _steps;
+        private readonly IEnumerable<Func<XDocument, IEnumerable<FailureMessageDescriptor>>> _steps;
 
         #endregion
 
@@ -130,7 +120,7 @@ namespace XmlFluentValidator.Rules
         /// =================================================================================================
         public XmlValidatorCompositeRule(
             string xPath,
-            IEnumerable<Func<XDocument, IEnumerable<XmlValidationFailureResult>>> steps,
+            IEnumerable<Func<XDocument, IEnumerable<FailureMessageDescriptor>>> steps,
             string displayName)
         {
             _xPath = xPath;
@@ -145,13 +135,14 @@ namespace XmlFluentValidator.Rules
             {
                 if (_severity.AreEquals(XmlMessageSeverity.Error))
                 {
-                    ctx.Failures.Add(new XmlValidationFailureResult()
-                    {
-                        Severity = _severity,
-                        Path = _xPath,
-                        Name = DisplayName,
-                        Message = _defaultMessage.IfNullOrWhiteSpace(_conditionMessage.IfNullOrWhiteSpace("Condition evaluation failed!"))
-                    });
+                    var desc = _messageDescriptors.TryGetValue(CompositeRuleMessageDescriptorType.Default)
+                               ?? _messageDescriptors.TryGetValue(CompositeRuleMessageDescriptorType.Custom)
+                               ?? _messageDescriptors.TryGetValue(CompositeRuleMessageDescriptorType.Condition)
+                               ?? DefaultMessageDescriptors.ConditionFailed;
+                    var failure = ctx.MessageFactory.Create(desc, path: _xPath, name: DisplayName,
+                        MessageArguments.From((MessageArgs.Path, _xPath)));
+
+                    ctx.Failures.Add(failure);
                 }
 
                 return;
@@ -163,20 +154,28 @@ namespace XmlFluentValidator.Rules
 
                 foreach (var f in failures.NotNull())
                 {
-                    if (f.Message.IsMissing())
+                    XmlValidationFailureResult failure = null;
+                    if (f.Descriptor.IsNull())
                     {
-                        //  For WithMessage
-                        if (_customMessage.IsPresent())
-                            f.Message = _customMessage;
-
-                        // For WithMessageForAll (same message for all failure results)
-                        if (_defaultMessage.IsPresent())
-                            f.Message = _defaultMessage;
+                        var desc = _messageDescriptors.TryGetValue(CompositeRuleMessageDescriptorType.Default)
+                                   ?? _messageDescriptors.TryGetValue(CompositeRuleMessageDescriptorType.Custom)
+                                   ?? _messageDescriptors.TryGetValue(CompositeRuleMessageDescriptorType.Condition)
+                                   ?? DefaultMessageDescriptors.GenericFailure;
+                        failure = ctx.MessageFactory.Create(desc, path: f.Path, name: f.Name, MessageArguments.From((MessageArgs.Path, _xPath)));
                     }
-
-                    ctx.Failures.Add(f);
+                    else
+                    {
+                        if (_messageDescriptors.TryGetValue(CompositeRuleMessageDescriptorType.Default, out var descriptor))
+                            failure = ctx.MessageFactory.Create(descriptor, path: f.Path, name: f.Name, MessageArguments.From((MessageArgs.Path, _xPath)));
+                        else if (_messageDescriptors.TryGetValue(CompositeRuleMessageDescriptorType.Custom, out var messageDescriptor))
+                            failure = ctx.MessageFactory.Create(messageDescriptor, path: f.Path, name: f.Name, MessageArguments.From((MessageArgs.Path, _xPath)));
+                        else
+                            failure = ctx.MessageFactory.Create(f.Descriptor, path: f.Path, name: f.Name, f.Arguments);
+                    }
+                    ctx.Failures.Add(failure);
                 }
             }
+
         }
 
         #region INTERNAL
@@ -196,13 +195,13 @@ namespace XmlFluentValidator.Rules
         /// <summary>
         ///     Sets condition message.
         /// </summary>
-        /// <param name="conditionMessage">Message describing the condition.</param>
+        /// <param name="conditionDescriptor">Message describing the condition.</param>
         /// <param name="severity">(Optional) The severity.</param>
         /// =================================================================================================
-        internal void SetConditionMessage(string conditionMessage,
+        internal void SetConditionMessage(MessageDescriptor conditionDescriptor,
             XmlMessageSeverity severity = XmlMessageSeverity.Error)
         {
-            _conditionMessage = conditionMessage;
+            _messageDescriptors[CompositeRuleMessageDescriptorType.Condition] = conditionDescriptor;
             _severity = severity;
         }
 
@@ -210,22 +209,22 @@ namespace XmlFluentValidator.Rules
         /// <summary>
         ///     Sets custom message.
         /// </summary>
-        /// <param name="customMessage">Message describing the custom.</param>
+        /// <param name="customDescriptor">Message describing the custom.</param>
         /// =================================================================================================
-        internal void SetCustomMessage(string customMessage)
+        internal void SetCustomMessage(MessageDescriptor customDescriptor)
         {
-            _customMessage = customMessage;
+            _messageDescriptors[CompositeRuleMessageDescriptorType.Custom] = customDescriptor;
         }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Sets default message.
         /// </summary>
-        /// <param name="defaultMessage">The default message.</param>
+        /// <param name="defaultDescriptor">The default message.</param>
         /// =================================================================================================
-        internal void SetDefaultMessage(string defaultMessage)
+        internal void SetDefaultMessage(MessageDescriptor defaultDescriptor)
         {
-            _defaultMessage = defaultMessage;
+            _messageDescriptors[CompositeRuleMessageDescriptorType.Default] = defaultDescriptor;
         }
 
         #endregion

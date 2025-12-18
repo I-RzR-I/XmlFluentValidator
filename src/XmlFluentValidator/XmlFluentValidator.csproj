@@ -19,7 +19,7 @@
 		<Summary>A fluent API for defining XML validation rules and generating XSD schemas.</Summary>
 		<PackageTitle>RzR.Shared.Entity (XmlFluentValidator)</PackageTitle>
 		<Title>RzR.Shared.Entity (XmlFluentValidator)</Title>
-		<LangVersion>9.0</LangVersion>
+		<LangVersion>latest</LangVersion><!-- 9.0 -->
 		<Language>en-US</Language>
 		<RepositoryType>GIT</RepositoryType>
 		<PackageIconUrl />

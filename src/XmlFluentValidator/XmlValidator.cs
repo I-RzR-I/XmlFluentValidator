@@ -221,7 +221,7 @@ namespace XmlFluentValidator
                 }
             }
 
-            var ctx = new XmlValidationContext(doc, failures);
+            var ctx = new XmlValidationContext(doc, failures, null);
             foreach (var r in _rules)
                 r.Evaluate(ctx);
 

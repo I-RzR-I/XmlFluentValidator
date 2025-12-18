@@ -110,6 +110,48 @@ namespace XmlValidatorTests.Tests
 
             Assert.IsNotNull(result);
             Assert.IsFalse(result.IsValid);
+            Assert.AreEqual("SKU validation fails.", result.Errors.FirstOrDefault()?.Message);
+        }
+
+        [TestMethod]
+        public void Validate_ForElement_MatchesRegex_Message_Fail_OnItemSku_0_Test()
+        {
+            var xml = XDocument.Parse(@"
+<order>
+    <id>123</id>
+    <customer>
+        <id>123</id>
+        <email>john@example.com</email>
+    </customer>
+    <items>
+        <item sku=""A-001"" qty=""9"">19</item>
+        <item sku=""ABC-001"" qty=""9"" type=""premium"">1900</item>
+    </items>
+    <discount >
+        5
+    </discount>
+    <totalQty>
+        9
+    </totalQty>
+    <totalAmount>
+        9000
+    </totalAmount>
+    <billing>
+        <customerId>123</customerId>
+    </billing>
+</order>");
+
+            var validator = new XmlValidator("order")
+                .ForElement("items/item@sku")
+                .Required()
+                .MatchesRegex(@"^[A-Z]{3}-\d{3}$", "SKU internal message")
+
+                .Done();
+
+            var result = validator.Validate(xml);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.IsValid);
             Assert.AreEqual("SKU internal message", result.Errors.FirstOrDefault()?.Message);
         }
 
@@ -188,6 +230,45 @@ namespace XmlValidatorTests.Tests
 
             Assert.IsNotNull(result);
             Assert.IsFalse(result.IsValid);
+            Assert.AreEqual("Id is missing", result.Errors.FirstOrDefault()?.Message);
+        }
+
+        [TestMethod]
+        public void Validate_ForPath_MustExist_Fail_Message_0_Test()
+        {
+            var xml = XDocument.Parse(@"
+<order>
+    <id>123</id>
+    <customer>
+        <email>john@example.com</email>
+    </customer>
+    <items>
+        <item sku=""ABC-001"" qty=""9"">19</item>
+        <item sku=""ABC-001"" qty=""9"" type=""premium"">1900</item>
+    </items>
+    <discount type=""percentage"">
+        5
+    </discount>
+    <totalQty>
+        9
+    </totalQty>
+    <totalAmount>
+        9000
+    </totalAmount>
+    <billing>
+        <customerId>123</customerId>
+    </billing>
+</order>");
+
+            var validator = new XmlValidator()
+                .ForPath("/order/customer/id")
+                .MustExist("No id")
+                .Done();
+
+            var result = validator.Validate(xml);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.IsValid);
             Assert.AreEqual("No id", result.Errors.FirstOrDefault()?.Message);
         }
 
@@ -259,9 +340,9 @@ namespace XmlValidatorTests.Tests
 </order>");
 
             var validator = new XmlValidator()
-                .ForPath("/order/customer/id")
+                .ForPath("/order/customer/id").WithMessage("Temp")
                 .WithMessageForAll("Id is not valid")
-                .Required()
+                .Required("Req message").WithMessage("Req with message")
                 .Value(val =>
                 {
                     var isNumber = int.TryParse(val, out _);

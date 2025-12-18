@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Models.Message;
 
 #endregion
 
@@ -356,12 +357,12 @@ namespace XmlFluentValidator.Abstractions
         ///     Set custom validation message.
         /// </summary>
         /// <param name="template">The template.</param>
-        /// <param name="context">The context.</param>
+        /// <param name="arguments">The context, message arguments.</param>
         /// <returns>
         ///     An IXmlValidatorRuleBuilder.
         /// </returns>
         /// =================================================================================================
-        IXmlValidatorRuleBuilder WithMessage(string template, object context);
+        IXmlValidatorRuleBuilder WithMessage(string template, MessageArguments arguments);
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
