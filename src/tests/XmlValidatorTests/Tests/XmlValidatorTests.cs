@@ -24,6 +24,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using XmlFluentValidator;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Models.Message;
 using XmlFluentValidator.Models.Result;
 
 #endregion
@@ -122,6 +123,78 @@ namespace XmlValidatorTests.Tests
         }
 
         [TestMethod]
+        public void Validate_Fail_Test_1()
+        {
+            var xml = XDocument.Parse(@"
+<order>
+    <id>123</id>
+    <customer>
+        <email>john@example.com</email>
+    </customer>
+    <items>
+        <item sku=""ABC-001"" qty=""5"">Widget</item>
+    </items>
+    <discountCode>asoih9723</discountCode>
+</order>");
+
+            var validator = new XmlValidator()
+                .ForPath("/order/discountCode")
+                .Required("Ele required").WithMessage("Ele X required x2")
+                .Done()
+                .ForPath("/order/discountCode")
+                .When(doc =>
+                {
+                    return false;
+                }, "Internal condition message").WithMessage("Message2")
+                .Done()
+                .ForPath("/order/discountCode")
+                .All(e => e.Value.Length <= 10, "Discount code must be at most 10 characters.")
+                .Done();
+
+            var result = validator.Validate(xml);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.IsValid);
+            Assert.AreEqual("Message2", result.Errors.FirstOrDefault()?.Message);
+        }
+
+        [TestMethod]
+        public void Validate_Fail_Test_2()
+        {
+            var xml = XDocument.Parse(@"
+<order>
+    <id>123</id>
+    <customer>
+        <email>john@example.com</email>
+    </customer>
+    <items>
+        <item sku=""ABC-001"" qty=""5"">Widget</item>
+    </items>
+    <discountCode>asoih9723</discountCode>
+</order>");
+
+            var validator = new XmlValidator()
+                .ForPath("/order/discountCode")
+                .Required("Ele required").WithMessage("Ele X required x2")
+                .Done()
+                .ForPath("/order/discountCode")
+                .When(doc =>
+                {
+                    return false;
+                }, "Internal condition message")
+                .All(e => e.Value.Length <= 10, "Discount code must be at most 10 characters.")
+                .Done()
+                .ForPath("/order/discountCode")
+                .Done();
+
+            var result = validator.Validate(xml);
+
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result.IsValid);
+            Assert.AreEqual("Internal condition message", result.Errors.FirstOrDefault()?.Message);
+        }
+
+        [TestMethod]
         public void Validate_Pass_Test_3()
         {
             var xml = XDocument.Parse(@"
@@ -138,11 +211,11 @@ namespace XmlValidatorTests.Tests
             var validator = new XmlValidator()
                 .ForPath("/order/items/item")
                 .Count(c => c >= 1)
-                .WithMessage("Order must contain at least {Min} item(s).", new { Min = 1 })
+                .WithMessage("Order must contain at least {Min} item(s).", MessageArguments.From(("Min", 1)))
                 .Done()
                 .ForPath("/order/id")
                 .Value(v => int.TryParse(v, out var n) && n > 0)
-                .WithMessage("Order Id '{XPath}' is invalid: {Raw}", new { })
+                .WithMessage("Order Id '{XPath}' is invalid: {Raw}", null)
                 .Done();
 
 
@@ -170,15 +243,15 @@ namespace XmlValidatorTests.Tests
             var validator = new XmlValidator()
                 .ForPath("/order/items/item")
                 .Count(c => c >= 1)
-                .WithMessage("Order must contain at least {Min} item(s).", new { Min = 1 })
+                .WithMessage("Order must contain at least {Min} item(s).", MessageArguments.From(("Min", 1)))
                 .Done()
                 .ForPath("/order/items/item")
                 .Attribute("qty", v => int.TryParse(v, out var n) && n > 0)
-                .WithMessage("Item quantity at {XPath} must be positive. Found: {Raw}", new { })
+                .WithMessage("Item quantity at {XPath} must be positive. Found: {Raw}", null)
                 .Done()
                 .ForPath("/order/id")
                 .Value(v => int.TryParse(v, out var n) && n > 0)
-                .WithMessage("Order Id '{XPath}' is invalid: {Raw}", new { })
+                .WithMessage("Order Id '{XPath}' is invalid: {Raw}", null)
                 .Done();
 
 

@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 //  Assembly         : RzR.Shared.Entity.XmlFluentValidator
 //  Author           : RzR
-//  Created On       : 2025-12-09 20:12
+//  Created On       : 2025-12-17 18:12
 // 
 //  Last Modified By : RzR
-//  Last Modified On : 2025-12-09 20:25
+//  Last Modified On : 2025-12-18 19:55
 // ***********************************************************************
-//  <copyright file="XmlValidationMessageResult.cs" company="RzR SOFT & TECH">
+//  <copyright file="XmlMessageFormatter.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
 //  </copyright>
 // 
@@ -14,14 +14,24 @@
 //  </summary>
 // ***********************************************************************
 
-namespace XmlFluentValidator.Models.Result
+#region U S A G E S
+
+using System.Collections.Generic;
+using DomainCommonExtensions.ArraysExtensions;
+using DomainCommonExtensions.DataTypeExtensions;
+
+// ReSharper disable ClassNeverInstantiated.Global
+
+#endregion
+
+namespace XmlFluentValidator.Helpers.Internal
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
     ///     Encapsulates the result of an XML validation message.
     /// </summary>
     /// =================================================================================================
-    public class XmlValidationMessageResult
+    internal class XmlMessageFormatter
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -38,14 +48,39 @@ namespace XmlFluentValidator.Models.Result
             var props = context.GetType().GetProperties();
             var msg = template;
 
-            foreach (var p in props)
+            foreach (var p in props.NotNull())
             {
                 var token = "{" + p.Name + "}";
-                var value = p.GetValue(context)?.ToString() ?? "";
+                var value = p.GetValue(context)?.ToString().IfNullThenEmpty();
                 msg = msg.Replace(token, value);
             }
 
             return msg;
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Formats.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>
+        ///     The formatted value.
+        /// </returns>
+        /// =================================================================================================
+        public static string Format(string template, IReadOnlyDictionary<string, object> args)
+        {
+            if (template.IsMissing() || args.IsNullOrEmptyEnumerable())
+                return template;
+
+            var result = template;
+            foreach (var kv in args.NotNull())
+            {
+                var token = "{" + kv.Key + "}";
+                result = result.Replace(token, kv.Value?.ToString().IfNullThenEmpty());
+            }
+
+            return result;
         }
     }
 }

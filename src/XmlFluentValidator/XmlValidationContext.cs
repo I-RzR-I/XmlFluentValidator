@@ -4,7 +4,7 @@
 //  Created On       : 2025-12-09 20:12
 // 
 //  Last Modified By : RzR
-//  Last Modified On : 2025-12-09 20:45
+//  Last Modified On : 2025-12-18 20:45
 // ***********************************************************************
 //  <copyright file="XmlValidationContext.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
@@ -18,6 +18,8 @@
 
 using System.Collections.Generic;
 using System.Xml.Linq;
+using DomainCommonExtensions.CommonExtensions.TypeParam;
+using XmlFluentValidator.Abstractions.Message;
 using XmlFluentValidator.Models.Result;
 
 #endregion
@@ -33,16 +35,13 @@ namespace XmlFluentValidator
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Initializes a new instance of the <see cref="XmlValidationContext"/> class.
+        ///     Gets the message factory.
         /// </summary>
-        /// <param name="doc">The document.</param>
-        /// <param name="failures">The failures.</param>
+        /// <value>
+        ///     The message factory.
+        /// </value>
         /// =================================================================================================
-        public XmlValidationContext(XDocument doc, IList<XmlValidationFailureResult> failures)
-        {
-            Document = doc;
-            Failures = failures;
-        }
+        public IXmlValidationMessageFactory MessageFactory { get; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -63,5 +62,21 @@ namespace XmlFluentValidator
         /// </value>
         /// =================================================================================================
         public IList<XmlValidationFailureResult> Failures { get; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="XmlValidationContext"/> class.
+        /// </summary>
+        /// <param name="doc">The document.</param>
+        /// <param name="failures">The failures.</param>
+        /// <param name="messageFactory">The message factory.</param>
+        /// =================================================================================================
+        public XmlValidationContext(XDocument doc, IList<XmlValidationFailureResult> failures, 
+            IXmlValidationMessageFactory messageFactory)
+        {
+            Document = doc;
+            Failures = failures;
+            MessageFactory = messageFactory.IfIsNull(new DefaultXmlValidationMessageFactory());
+        }
     }
 }

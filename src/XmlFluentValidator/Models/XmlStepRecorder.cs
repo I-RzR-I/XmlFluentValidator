@@ -16,9 +16,8 @@
 
 #region U S A G E S
 
-using System;
-using System.Xml.Linq;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Models.Message;
 
 #endregion
 
@@ -93,12 +92,12 @@ namespace XmlFluentValidator.Models
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the message.
+        ///     Gets or sets the descriptor.
         /// </summary>
         /// <value>
-        ///     The message.
+        ///     The descriptor.
         /// </value>
         /// =================================================================================================
-        public string Message { get; set; }
+        public MessageDescriptor Descriptor { get; set; }
     }
 }

@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 //  Assembly         : RzR.Shared.Entity.XmlFluentValidator
 //  Author           : RzR
-//  Created On       : 2025-12-09 20:12
+//  Created On       : 2025-12-17 18:12
 // 
 //  Last Modified By : RzR
-//  Last Modified On : 2025-12-09 20:34
+//  Last Modified On : 2025-12-18 19:47
 // ***********************************************************************
-//  <copyright file="XmlValidationFailureResult.cs" company="RzR SOFT & TECH">
+//  <copyright file="MessageDescriptor.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
 //  </copyright>
 // 
@@ -20,63 +20,72 @@ using XmlFluentValidator.Enums;
 
 #endregion
 
-namespace XmlFluentValidator.Models.Result
+namespace XmlFluentValidator.Models.Message
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
-    ///     Encapsulates the result of an XML validation failure.
+    ///     A message descriptor.
     /// </summary>
     /// =================================================================================================
-    public class XmlValidationFailureResult
+    public class MessageDescriptor
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the severity.
+        ///     Gets the message code.
         /// </summary>
         /// <value>
-        ///     The severity.
+        ///     The code.
         /// </value>
         /// =================================================================================================
-        public XmlMessageSeverity Severity { get; set; }
+        public string Code { get; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the full pathname of the file.
+        ///     Gets the default message/template.
         /// </summary>
         /// <value>
-        ///     The full pathname of the file.
+        ///     The default template.
         /// </value>
         /// =================================================================================================
-        public string Path { get; set; }
+        public string DefaultTemplate { get; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the message.
+        ///     Gets the default message severity.
         /// </summary>
         /// <value>
-        ///     The message.
+        ///     The default severity.
         /// </value>
         /// =================================================================================================
-        public string Code { get; set; }
+        public XmlMessageSeverity DefaultSeverity { get; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the message.
+        ///     Initializes a new instance of the <see cref="MessageDescriptor"/> class.
         /// </summary>
-        /// <value>
-        ///     The message.
-        /// </value>
+        /// <param name="code">The message code.</param>
+        /// <param name="template">The message/template.</param>
+        /// <param name="severity">(Optional) The severity.</param>
         /// =================================================================================================
-        public string Message { get; set; }
+        public MessageDescriptor(string code, string template, XmlMessageSeverity severity = XmlMessageSeverity.Error)
+        {
+            Code = code;
+            DefaultTemplate = template;
+            DefaultSeverity = severity;
+        }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the name.
+        ///     Initializes a new instance of the <see cref="MessageDescriptor"/> class.
         /// </summary>
-        /// <value>
-        ///     The name.
-        /// </value>
+        /// <param name="template">The message/template.</param>
+        /// <param name="severity">(Optional) The severity.</param>
         /// =================================================================================================
-        public string Name { get; set; }
+        public MessageDescriptor(string template, XmlMessageSeverity severity = XmlMessageSeverity.Error)
+        {
+            Code = null;
+            DefaultTemplate = template;
+            DefaultSeverity = severity;
+        }
     }
 }

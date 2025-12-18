@@ -27,8 +27,12 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using XmlFluentValidator.Abstractions;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Helpers.Internal;
 using XmlFluentValidator.Models;
+using XmlFluentValidator.Models.Message;
 using XmlFluentValidator.Models.Result;
+
+// ReSharper disable UseCollectionExpression
 
 #endregion
 
@@ -46,17 +50,15 @@ namespace XmlFluentValidator.Rules
     {
         private string _displayName;
         private bool _stopOnFailure;
-        private string _attributeName;
         private bool _targetIsAttribute;
-        private Func<object, string> _messageFormatter;
-        private string _message;
+        private string _attributeName;
         private XmlMessageSeverity _severity = XmlMessageSeverity.Error;
 
         private readonly string _xpath;
         private readonly XmlValidator _validator;
-        private readonly IList<Func<XDocument, IEnumerable<XmlValidationFailureResult>>>
-            _steps = new List<Func<XDocument, IEnumerable<XmlValidationFailureResult>>>();
-        
+        private readonly IList<Func<XDocument, IEnumerable<FailureMessageDescriptor>>>
+            _steps = new List<Func<XDocument, IEnumerable<FailureMessageDescriptor>>>();
+
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Initializes a new instance of the <see cref="XmlValidatorRuleBuilder"/> class.
@@ -94,15 +96,13 @@ namespace XmlFluentValidator.Rules
                 var ok = _targetIsAttribute ? nodes.Any(e => e.HasAttributes) : nodes.Any();
                 if (ok.IsFalse())
                 {
-                    var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace("Required node not found."));
+                    var failure = BuildFailureMessage(message, DefaultMessageDescriptors.NodeRequired,
+                        MessageArguments.From((MessageArgs.Path, _xpath)));
 
-                    return new[]
-                    {
-                        Failure(failMessage, path: _xpath)
-                    };
+                    return new[] { failure };
                 }
 
-                return Enumerable.Empty<XmlValidationFailureResult>();
+                return Enumerable.Empty<FailureMessageDescriptor>();
             });
 
             return this;
@@ -116,15 +116,13 @@ namespace XmlFluentValidator.Rules
                 var count = doc.XPathSelectElements(_xpath).Count();
                 if (predicate(count).IsFalse())
                 {
-                    var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Count predicate failed (count={count})."));
-                    
-                    return new[]
-                    {
-                        Failure(failMessage, _xpath)
-                    };
+                    var failure = BuildFailureMessage(message, DefaultMessageDescriptors.CountFailed,
+                        MessageArguments.From((MessageArgs.Count, count)));
+
+                    return new[] { failure };
                 }
 
-                return Enumerable.Empty<XmlValidationFailureResult>();
+                return Enumerable.Empty<FailureMessageDescriptor>();
             });
 
             return this;
@@ -136,7 +134,7 @@ namespace XmlFluentValidator.Rules
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath).ToList();
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
 
                 foreach (var e in elems)
                 {
@@ -144,8 +142,9 @@ namespace XmlFluentValidator.Rules
                     var val = e?.Value;
                     if (predicate(val.IfNullThenEmpty()).IsFalse())
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace("Invalid value."));
-                        fails.Add(Failure(failMessage, GetElementPath(e)));
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ValueFailed,
+                            MessageArguments.From((MessageArgs.Value, val)));
+                        fails.Add(failure);
 
                         if (_stopOnFailure)
                             break;
@@ -164,15 +163,17 @@ namespace XmlFluentValidator.Rules
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     var attr = e.Attribute(name);
                     var ok = predicate(attr?.Value);
                     if (ok.IsFalse())
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Attribute '{name}' invalid."));
-                        fails.Add(Failure(failMessage, GetElementPath(e) + "/@" + name));
+                        var path = GetElementPath(e) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeInvalid,
+                            MessageArguments.From((MessageArgs.Name, name), (MessageArgs.Path, path)), path);
+                        fails.Add(failure);
 
                         if (_stopOnFailure)
                             break;
@@ -191,13 +192,15 @@ namespace XmlFluentValidator.Rules
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     if (predicate(e).IsFalse())
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace("Element failed predicate."));
-                        fails.Add(Failure(failMessage, GetElementPath(e)));
+                        var path = GetElementPath(e);
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementPredicateFailed, path: path);
+
+                        fails.Add(failure);
 
                         if (_stopOnFailure)
                             break;
@@ -219,8 +222,8 @@ namespace XmlFluentValidator.Rules
                 var ok = elems.Any(predicate);
 
                 return ok
-                    ? Enumerable.Empty<XmlValidationFailureResult>()
-                    : new[] { Failure(message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace("No element satisfied predicate.")), _xpath) };
+                    ? Enumerable.Empty<FailureMessageDescriptor>()
+                    : new[] { BuildFailureMessage(message, DefaultMessageDescriptors.NoElementPredicateFailed, path: _xpath) };
             });
 
             return this;
@@ -234,15 +237,15 @@ namespace XmlFluentValidator.Rules
 
             if (message.IsPresent())
             {
-                var newMessage = FailureMessage(message, _xpath);
-                rule.SetConditionMessage(newMessage, _severity);
+                var newMessage = LegacyMessageAdapter.FromRaw(message: message, path: _xpath);
+                rule.SetConditionMessage(LegacyMessageAdapter.FromRaw(message: message, path: _xpath), _severity);
 
-                if (newMessage.IsPresent())
+                if (newMessage.IsNotNull())
                 {
                     rule.RecordedSteps.Add(new XmlStepRecorder()
                     {
                         Kind = XmlValidationRuleKind.Condition,
-                        Message = newMessage
+                        Descriptor = newMessage
                     });
                 }
             }
@@ -257,10 +260,10 @@ namespace XmlFluentValidator.Rules
             rule.RecordedSteps.Add(new XmlStepRecorder()
             {
                 Kind = XmlValidationRuleKind.ElementOptional,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage("Element is optional", _xpath)))
+                Descriptor = DefaultMessageDescriptors.ElementOptional
             });
 
-            _steps.Add(doc => new List<XmlValidationFailureResult>());
+            _steps.Add(doc => new List<FailureMessageDescriptor>());
 
             return this;
         }
@@ -272,17 +275,18 @@ namespace XmlFluentValidator.Rules
             rule.RecordedSteps.Add(new XmlStepRecorder()
             {
                 Kind = XmlValidationRuleKind.ElementRequired,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.ElementRequired
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath).ToList();
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 if (elems.IsNullOrEmptyEnumerable())
                 {
-                    var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace("Required element is missing."));
-                    fails.Add(Failure(failMessage, _xpath));
+                    var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementMissing,
+                        MessageArguments.From((MessageArgs.Path, _xpath)));
+                    fails.Add(failure);
                 }
                 else
                 {
@@ -291,8 +295,10 @@ namespace XmlFluentValidator.Rules
                         var val = e.Value;
                         if (val.IsMissing())
                         {
-                            var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace("Required value is empty."));
-                            fails.Add(Failure(failMessage, GetElementPath(e)));
+                            var path = GetElementPath(e);
+                            var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementRequired,
+                                MessageArguments.From((MessageArgs.Element, e.Name.LocalName), (MessageArgs.Path, path)), path);
+                            fails.Add(failure);
 
                             if (_stopOnFailure)
                                 break;
@@ -314,21 +320,23 @@ namespace XmlFluentValidator.Rules
             {
                 Kind = XmlValidationRuleKind.ElementRegex,
                 Pattern = pattern,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.ValueMustMatchPatternFailed
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     var val = e.Value.IfNullThenEmpty();
                     if (Regex.IsMatch(val, pattern).IsFalse())
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Value '{val}' does not match regex '{pattern}'."));
-                        //fails.Add(Failure(message.IfNullOrWhiteSpace($"Value '{val}' does not match regex '{pattern}'."), GetElementPath(e)));
-                        fails.Add(Failure(failMessage, GetElementPath(e)));
+                        var path = GetElementPath(e);
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ValueMustMatchPattern,
+                            MessageArguments.From((MessageArgs.Actual, val), (MessageArgs.Pattern, pattern), (MessageArgs.Path, path)), path);
+
+                        fails.Add(failure);
 
                         if (_stopOnFailure)
                             break;
@@ -350,21 +358,24 @@ namespace XmlFluentValidator.Rules
                 Kind = XmlValidationRuleKind.ElementRangeInt,
                 Min = min,
                 Max = max,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.ElementAttributeInRangeFailed
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     if (int.TryParse(e.Value, out var n))
                     {
                         if (n < min || n > max)
                         {
-                            var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Value {n} must be between {min} and {max}."));
-                            fails.Add(Failure(failMessage, GetElementPath(e)));
+                            var path = GetElementPath(e);
+                            var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementInRangeWithValue,
+                                MessageArguments.From((MessageArgs.Value, n), (MessageArgs.Minimum, min), (MessageArgs.Maximum, max)), path);
+
+                            fails.Add(failure);
 
                             if (_stopOnFailure)
                                 break;
@@ -372,8 +383,11 @@ namespace XmlFluentValidator.Rules
                     }
                     else
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Value '{e.Value}' is not a valid integer."));
-                        fails.Add(Failure(failMessage, GetElementPath(e)));
+                        var path = GetElementPath(e);
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ValueIsNotInt,
+                            MessageArguments.From((MessageArgs.Value, e.Value)), path);
+
+                        fails.Add(failure);
                     }
                 }
 
@@ -390,7 +404,7 @@ namespace XmlFluentValidator.Rules
             rule.RecordedSteps.Add(new XmlStepRecorder()
             {
                 Kind = XmlValidationRuleKind.ElementUnique,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.ElementUniqueFailed
             });
 
             _steps.Add(doc =>
@@ -400,15 +414,13 @@ namespace XmlFluentValidator.Rules
                 var duplicates = values.GroupBy(v => v).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
                 if (duplicates.Any())
                 {
-                    var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Duplicate values found: {string.Join(", ", duplicates)}"));
+                    var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementUniqueDuplicateFailed,
+                        MessageArguments.From((MessageArgs.Duplicates, string.Join(", ", duplicates))));
 
-                    return new[]
-                    {
-                        Failure(failMessage, _xpath)
-                    };
+                    return new[] { failure };
                 }
 
-                return Enumerable.Empty<XmlValidationFailureResult>();
+                return Enumerable.Empty<FailureMessageDescriptor>();
             });
 
             return this;
@@ -422,20 +434,23 @@ namespace XmlFluentValidator.Rules
             {
                 Kind = XmlValidationRuleKind.AttributeRequired,
                 AttributeName = name,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.AttributeMissing
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     var attr = e.Attribute(name);
                     if (attr.IsNull() || attr!.Value.IsMissing())
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Attribute '{name}' is required."));
-                        fails.Add(Failure(failMessage, GetElementPath(e) + "/@" + name));
+                        var path = GetElementPath(e) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeRequired,
+                            MessageArguments.From((MessageArgs.Attribute, name), (MessageArgs.Path, path)), path);
+
+                        fails.Add(failure);
 
                         if (_stopOnFailure)
                             break;
@@ -457,20 +472,23 @@ namespace XmlFluentValidator.Rules
                 Kind = XmlValidationRuleKind.AttributeRegex,
                 AttributeName = name,
                 Pattern = pattern,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.ValueMustMatchPatternFailed
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     var attr = e.Attribute(name);
                     if (attr.IsNotNull() && Regex.IsMatch(attr!.Value, pattern).IsFalse())
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Attribute '{name}' value '{attr.Value}' does not match regex '{pattern}'."));
-                        fails.Add(Failure(failMessage, GetElementPath(e) + "/@" + name));
+                        var path = GetElementPath(e) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeValueMustMatchPattern,
+                            MessageArguments.From((MessageArgs.Name, name), (MessageArgs.Actual, attr.Value), (MessageArgs.Pattern, pattern), (MessageArgs.Path, path)), path);
+
+                        fails.Add(failure);
 
                         if (_stopOnFailure)
                             break;
@@ -493,13 +511,13 @@ namespace XmlFluentValidator.Rules
                 AttributeName = name,
                 Min = min,
                 Max = max,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.ElementAttributeInRangeFailed
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     var attr = e.Attribute(name);
@@ -507,8 +525,10 @@ namespace XmlFluentValidator.Rules
                     {
                         if (n < min || n > max)
                         {
-                            var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace("Attribute '{name}' must be between {min} and {max}."));
-                            fails.Add(Failure(failMessage, GetElementPath(e) + "/@" + name));
+                            var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeInRangeWithValue,
+                                MessageArguments.From((MessageArgs.Name, name), (MessageArgs.Value, n), (MessageArgs.Minimum, min), (MessageArgs.Maximum, max)));
+
+                            fails.Add(failure);
 
                             if (_stopOnFailure)
                                 break;
@@ -516,8 +536,11 @@ namespace XmlFluentValidator.Rules
                     }
                     else
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Attribute '{name}' is not a valid integer."));
-                        fails.Add(Failure(failMessage, GetElementPath(e) + "/@" + name));
+                        var path = GetElementPath(e) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ValueIsNotInt,
+                            MessageArguments.From((MessageArgs.Value, e.Value)), path);
+
+                        fails.Add(failure);
                     }
                 }
 
@@ -535,7 +558,7 @@ namespace XmlFluentValidator.Rules
             {
                 Kind = XmlValidationRuleKind.AttributeUnique,
                 AttributeName = name,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.AttributeUniqueFailed
             });
 
             _steps.Add(doc =>
@@ -545,15 +568,13 @@ namespace XmlFluentValidator.Rules
                 var duplicates = values.GroupBy(v => v).Where(g => g.Count() > 1).Select(g => g.Key!).ToList();
                 if (duplicates.Any())
                 {
-                    var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Duplicate attribute '{name}' values found: {string.Join(", ", duplicates)}"));
+                    var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeUniqueDuplicateFailed,
+                        MessageArguments.From((MessageArgs.Name, name), (MessageArgs.Path, _xpath), (MessageArgs.Duplicates, string.Join(", ", duplicates))), _xpath);
 
-                    return new[]
-                    {
-                        Failure(failMessage, _xpath)
-                    };
+                    return new[] { failure };
                 }
 
-                return Enumerable.Empty<XmlValidationFailureResult>();
+                return Enumerable.Empty<FailureMessageDescriptor>();
             });
 
             return this;
@@ -567,21 +588,24 @@ namespace XmlFluentValidator.Rules
             {
                 Kind = XmlValidationRuleKind.ElementAttributeCross,
                 AttributeName = attributeName,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.CrossValidationFailed
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     var attrVal = e.Attribute(attributeName)?.Value;
                     var elemVal = e.Value;
                     if (predicate(elemVal, attrVal).IsFalse())
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Cross validation failed between element '{e.Name}' and attribute '{attributeName}'."));
-                        fails.Add(Failure(failMessage, GetElementPath(e)));
+                        var path = GetElementPath(e);
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.CrossValidationWithDataFailed,
+                            MessageArguments.From((MessageArgs.Name, e.Name), (MessageArgs.Attribute, path)), path);
+
+                        fails.Add(failure);
 
                         if (_stopOnFailure)
                             break;
@@ -601,20 +625,22 @@ namespace XmlFluentValidator.Rules
             rule.RecordedSteps.Add(new XmlStepRecorder()
             {
                 Kind = XmlValidationRuleKind.CustomElement,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     var attrs = e.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value);
                     if (predicate(e, attrs).IsFalse())
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Custom validation failed for element '{e.Name}'."));
-                        fails.Add(Failure(failMessage, GetElementPath(e)));
+                        var path = GetElementPath(e);
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementCrossValidationFailed,
+                            MessageArguments.From((MessageArgs.Name, e.Name)), path);
+
+                        fails.Add(failure);
 
                         if (_stopOnFailure)
                             break;
@@ -634,17 +660,17 @@ namespace XmlFluentValidator.Rules
             rule.RecordedSteps.Add(new XmlStepRecorder()
             {
                 Kind = XmlValidationRuleKind.CustomElement,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.CustomValidationFailed
             });
 
             _steps.Add(doc =>
             {
                 var fails = new List<XmlValidationFailureResult>();
-                var ctx = new XmlValidationContext(doc, fails);
+                var ctx = new XmlValidationContext(doc, fails, null);
 
                 handler(ctx);
 
-                return fails;
+                return Enumerable.Empty<FailureMessageDescriptor>();
             });
 
             return this;
@@ -661,20 +687,23 @@ namespace XmlFluentValidator.Rules
             rule.RecordedSteps.Add(new XmlStepRecorder()
             {
                 Kind = XmlValidationRuleKind.CustomElement,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.CustomValidationRuleFailed
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 foreach (var e in elems)
                 {
                     var attrs = e.Attributes().ToDictionary(a => a.Name.LocalName, a => a.Value);
                     if (predicate(e, attrs).IsFalse())
                     {
-                        var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Custom rule '{ruleName}' failed for element '{e.Name}'."));
-                        fails.Add(Failure(failMessage, GetElementPath(e)));
+                        var path = GetElementPath(e);
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.CustomValidationRuleWithDataFailed,
+                            MessageArguments.From((MessageArgs.RuleName, ruleName), (MessageArgs.Name, e.Name)), path);
+
+                        fails.Add(failure);
 
                         if (_stopOnFailure)
                             break;
@@ -695,17 +724,19 @@ namespace XmlFluentValidator.Rules
             {
                 Kind = XmlValidationRuleKind.ElementMaxOccurs,
                 MaxOccurs = max,
-                Message = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace(FailureMessage(message, _xpath)))
+                Descriptor = DefaultMessageDescriptors.ElementMaxOccursFailed
             });
 
             _steps.Add(doc =>
             {
                 var elems = doc.XPathSelectElements(_xpath);
-                var fails = new List<XmlValidationFailureResult>();
+                var fails = new List<FailureMessageDescriptor>();
                 if (elems.Count() > max)
                 {
-                    var failMessage = message.IfNullOrWhiteSpace(_message.IfNullOrWhiteSpace($"Element must not occur more than {max} times."));
-                    fails.Add(Failure(failMessage, _xpath));
+                    var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementMaxOccursWithDataFailed,
+                        MessageArguments.From((MessageArgs.Maximum, max)), _xpath);
+
+                    fails.Add(failure);
                 }
 
                 return fails;
@@ -713,7 +744,7 @@ namespace XmlFluentValidator.Rules
 
             return this;
         }
-        
+
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithName(string displayName)
         {
@@ -739,9 +770,12 @@ namespace XmlFluentValidator.Rules
         }
 
         /// <inheritdoc />
-        public IXmlValidatorRuleBuilder WithMessage(string template, object context)
+        public IXmlValidatorRuleBuilder WithMessage(string template, MessageArguments arguments)
         {
-            _messageFormatter = (_) => XmlValidationMessageResult.Format(template, context);
+            var rule = _validator.CurrentRule;
+            var failure = XmlMessageFormatter.Format(template, arguments);
+
+            rule.SetCustomMessage(LegacyMessageAdapter.FromRaw(failure));
 
             return this;
         }
@@ -749,9 +783,8 @@ namespace XmlFluentValidator.Rules
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithMessage(string message)
         {
-            _message = message.IfNullOrWhiteSpace(FailureMessage(message, _xpath));
             var rule = _validator.CurrentRule;
-            rule.SetCustomMessage(_message);
+            rule.SetCustomMessage(LegacyMessageAdapter.FromRaw(message: message, path: _xpath));
 
             return this;
         }
@@ -759,9 +792,9 @@ namespace XmlFluentValidator.Rules
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithMessageForAll(string message)
         {
-            _message = message.IfNullOrWhiteSpace(FailureMessage(message, _xpath));
             var rule = _validator.CurrentRule;
-            rule.SetDefaultMessage(_message);
+
+            rule.SetDefaultMessage(LegacyMessageAdapter.FromRaw(message: message, path: _xpath));
 
             return this;
         }
@@ -793,33 +826,21 @@ namespace XmlFluentValidator.Rules
 
         #region PRIVATE
 
-        private XmlValidationFailureResult Failure(string message, string path)
+        private FailureMessageDescriptor BuildFailureMessage(string message, MessageDescriptor defaultDescriptor,
+            MessageArguments arguments = null, string path = null)
         {
-            var finalMessage = FailureMessage(message, path);
-
-            return new XmlValidationFailureResult()
+            var xpath = path.IsPresent() ? path : _xpath;
+            var failureDescriptor = message.IsPresent()
+                ? LegacyMessageAdapter.FromRaw(message, xpath, _severity)
+                : defaultDescriptor;
+            
+            return new FailureMessageDescriptor()
             {
-                Severity = _severity,
-                Path = path,
-                Message = finalMessage,
-                Name = _displayName
+                Path = xpath,
+                Name = _displayName,
+                Descriptor = failureDescriptor,
+                Arguments = arguments
             };
-        }
-
-        private string FailureMessage(string message, string path = null)
-        {
-            var finalMessage = message.IfNullOrWhiteSpace($"Validation failed {(path.IsPresent() ? $"at '{path}'" : "")}.");
-            if (_messageFormatter.IsNotNull())
-            {
-                finalMessage = _messageFormatter(new
-                {
-                    Path = path,
-                    Raw = finalMessage,
-                    Name = _displayName
-                });
-            }
-
-            return finalMessage;
         }
 
         private static string GetElementPath(XElement e)
