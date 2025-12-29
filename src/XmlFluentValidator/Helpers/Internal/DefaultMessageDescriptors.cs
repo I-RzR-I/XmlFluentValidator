@@ -25,7 +25,7 @@ namespace XmlFluentValidator.Helpers.Internal
     internal static class DefaultMessageDescriptors
     {
         public static readonly MessageDescriptor NodeRequired =
-            new("NODE_REQUIRED", $"Required node not found at '{{{MessageArgs.Path}}}'");
+            new("NODE_REQUIRED", $"IsRequired node not found at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor AttributeRequired =
             new("ATTR_REQUIRED", $"Attribute '{{{MessageArgs.Attribute}}}' is required at '{{{MessageArgs.Path}}}'");
@@ -57,17 +57,17 @@ namespace XmlFluentValidator.Helpers.Internal
             new("GENERIC_FAILED", $"Validation failed: {{{MessageArgs.Reason}}} at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor ElementMissing =
-            new("ELEMENT_MISSING", $"Required element is missing at '{{{MessageArgs.Path}}}'.");
+            new("ELEMENT_MISSING", $"IsRequired element is missing at '{{{MessageArgs.Path}}}'.");
 
         public static readonly MessageDescriptor AttributeMissing =
-            new("ATTRIBUTE_MISSING", "Required element is missing.");
+            new("ATTRIBUTE_MISSING", "IsRequired element is missing.");
 
         public static readonly MessageDescriptor AttributeMissingWithPath =
-            new("ATTRIBUTE_MISSING", $"Required element is missing at '{{{MessageArgs.Path}}}'.");
+            new("ATTRIBUTE_MISSING", $"IsRequired element is missing at '{{{MessageArgs.Path}}}'.");
 
         public static readonly MessageDescriptor ValueEmpty =
             new("VALUE_EMPTY",
-                $"Required value for element '{{{MessageArgs.Element}}}' is empty at '{{{MessageArgs.Path}}}'.");
+                $"IsRequired value for element '{{{MessageArgs.Element}}}' is empty at '{{{MessageArgs.Path}}}'.");
 
         public static readonly MessageDescriptor CountFailed =
             new("COUNT_FAILED", $"Count predicate failed (count='{{{MessageArgs.Count}}}').");
@@ -138,7 +138,42 @@ namespace XmlFluentValidator.Helpers.Internal
             new("ELEMENT_MAX_OCCURS_FAILED", "Element must not occur more than X times.");
 
         public static readonly MessageDescriptor ElementMaxOccursWithDataFailed =
-            new("ELEMENT_MAX_OCCURS_WITH_DATA_FAILED",
-                $"Element must not occur more than {{{MessageArgs.Maximum}}} times.");
+            new("ELEMENT_MAX_OCCURS_WITH_DATA_FAILED", $"Element must not occur more than {{{MessageArgs.Maximum}}} times.");
+
+        public static readonly MessageDescriptor ElementValueWithMinMaxLengthDataFailed =
+            new("ELEMENT_VALUE_WITH_MIN_MAX_LENGTH_DATA_FAILED", "The element value length validation failed.");
+
+        public static readonly MessageDescriptor ElementValueWithMinMaxLengthDataWithParamsFailed =
+            new("ELEMENT_VALUE_WITH_MIN_MAX_LENGTH_DATA_WITH_PARAM_FAILED",
+                $"The element value length must between the {{{MessageArgs.Minimum}}} and {{{MessageArgs.Maximum}}} range.");
+
+        public static readonly MessageDescriptor ElementValueWithMinLengthDataWithParamsFailed =
+            new("ELEMENT_VALUE_WITH_MIN_LENGTH_DATA_WITH_PARAM_FAILED",
+                $"The element value length must greater than {{{MessageArgs.Minimum}}}.");
+
+        public static readonly MessageDescriptor AttributeValueWithMinMaxLengthDataFailed =
+            new("ATTRIBUTE_VALUE_WITH_MIN_MAX_LENGTH_DATA_FAILED", "The attribute value length validation failed.");
+
+        public static readonly MessageDescriptor AttributeValueWithMinLengthDataWithParamsFailed =
+            new("ATTRIBUTE_VALUE_WITH_MIN_MAX_LENGTH_DATA_WITH_PARAM_FAILED",
+                $"The attribute value length must greater than {{{MessageArgs.Minimum}}}.");
+
+        public static readonly MessageDescriptor AttributeValueWithMinMaxLengthDataWithParamsFailed =
+            new("ATTRIBUTE_VALUE_WITH_MIN_MAX_LENGTH_DATA_WITH_PARAM_FAILED",
+                $"The attribute value length must between the {{{MessageArgs.Minimum}}} and {{{MessageArgs.Maximum}}} range.");
+
+        public static readonly MessageDescriptor ElementDataTypeValidationFailed =
+            new("ELEMENT_DATA_TYPE_FAILED", "The element data type validation failed.");
+
+        public static readonly MessageDescriptor ElementDataTypeWithParamsValidationFailed =
+            new("ELEMENT_DATA_TYPE_WITH_PARAMS_FAILED",
+                $"The element data type ({{{MessageArgs.DataType}}}) for value ({{{MessageArgs.Value}}}) validation failed.");
+
+        public static readonly MessageDescriptor AttributeDataTypeValidationFailed =
+            new("ATTRIBUTE_DATA_TYPE_FAILED", "The attribute data type validation failed.");
+
+        public static readonly MessageDescriptor AttributeDataTypeWithParamsValidationFailed =
+            new("ATTRIBUTE_DATA_TYPE_WITH_PARAMS_FAILED",
+                $"The attribute ({{{MessageArgs.Attribute}}}) data type ({{{MessageArgs.DataType}}}) for value ({{{MessageArgs.Value}}}) validation failed.");
     }
 }

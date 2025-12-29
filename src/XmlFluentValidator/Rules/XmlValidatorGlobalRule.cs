@@ -33,7 +33,7 @@ namespace XmlFluentValidator.Rules
     /// </summary>
     /// <seealso cref="T:XmlFluentValidator.Abstractions.IXmlValidatorRule"/>
     /// =================================================================================================
-    public class XmlValidatorGlobalRule : IXmlValidatorRule
+    public sealed class XmlValidatorGlobalRule : IXmlValidatorRule
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>

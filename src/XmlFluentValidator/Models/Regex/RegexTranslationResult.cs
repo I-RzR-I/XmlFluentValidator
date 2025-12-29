@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 //  Assembly         : RzR.Shared.Entity.XmlFluentValidator
 //  Author           : RzR
-//  Created On       : 2025-12-09 20:12
+//  Created On       : 2025-12-26 23:12
 // 
 //  Last Modified By : RzR
-//  Last Modified On : 2025-12-09 20:46
+//  Last Modified On : 2025-12-26 23:46
 // ***********************************************************************
-//  <copyright file="CustomRuleRegistry.cs" company="RzR SOFT & TECH">
+//  <copyright file="RegexTranslationResult.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
 //  </copyright>
 // 
@@ -16,54 +16,50 @@
 
 #region U S A G E S
 
-using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 #endregion
 
-namespace XmlFluentValidator.Rules
+namespace XmlFluentValidator.Models.Regex
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
-    ///     A custom rule registry.
+    ///     Encapsulates the result of a RegEx translation.
     /// </summary>
     /// =================================================================================================
-    public sealed class CustomRuleRegistry
+    public class RegexTranslationResult
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     (Immutable) the rules.
+        ///     Gets or sets the XSD pattern.
         /// </summary>
+        /// <value>
+        ///     The XSD pattern.
+        /// </value>
         /// =================================================================================================
-        private static readonly IDictionary<string, Func<XElement, IDictionary<string, string>, bool>> Rules
-            = new Dictionary<string, Func<XElement, IDictionary<string, string>, bool>>();
+        public string XsdPattern { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Registers this object.
+        ///     Gets or sets the warnings.
         /// </summary>
-        /// <param name="name">The name to get.</param>
-        /// <param name="predicate">The predicate.</param>
+        /// <value>
+        ///     The warnings.
+        /// </value>
         /// =================================================================================================
-        public static void Register(string name, Func<XElement, IDictionary<string, string>, bool> predicate)
-        {
-            Rules[name] = predicate;
-        }
+        public IReadOnlyList<string> Warnings { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets a func&lt; x element, i dictionary&lt;string,string?&gt;,bool&gt;? using
-        ///     the given name.
+        ///     Initializes a new instance of the <see cref="RegexTranslationResult"/> class.
         /// </summary>
-        /// <param name="name">The name to get.</param>
-        /// <returns>
-        ///     A Func&lt;XElement,IDictionary&lt;string,string?&gt;,bool&gt;?
-        /// </returns>
+        /// <param name="xsdPattern">The XSD pattern.</param>
+        /// <param name="warnings">The warnings.</param>
         /// =================================================================================================
-        public static Func<XElement, IDictionary<string, string>, bool> Get(string name)
+        public RegexTranslationResult(string xsdPattern, IReadOnlyList<string> warnings)
         {
-            return Rules.TryGetValue(name, out var rule) ? rule : null;
+            XsdPattern = xsdPattern;
+            Warnings = warnings;
         }
     }
 }

@@ -31,5 +31,6 @@ namespace XmlFluentValidator.Helpers.Internal
         public const string Maximum = "Maximum";
         public const string Duplicates = "Duplicates";
         public const string RuleName = "RuleName";
+        public const string DataType = "DataType";
     }
 }

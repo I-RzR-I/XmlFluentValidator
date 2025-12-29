@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 //  Assembly         : RzR.Shared.Entity.XmlFluentValidator
 //  Author           : RzR
-//  Created On       : 2025-12-09 20:12
+//  Created On       : 2025-12-26 12:12
 // 
 //  Last Modified By : RzR
-//  Last Modified On : 2025-12-18 20:45
+//  Last Modified On : 2025-12-26 15:38
 // ***********************************************************************
-//  <copyright file="XmlValidationContext.cs" company="RzR SOFT & TECH">
+//  <copyright file="XsdAttributeModelDefinition.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
 //  </copyright>
 // 
@@ -16,67 +16,67 @@
 
 #region U S A G E S
 
-using System.Collections.Generic;
-using System.Xml.Linq;
-using DomainCommonExtensions.CommonExtensions.TypeParam;
-using XmlFluentValidator.Abstractions.Message;
-using XmlFluentValidator.Models.Result;
+using XmlFluentValidator.Enums;
 
 #endregion
 
-namespace XmlFluentValidator
+namespace XmlFluentValidator.Models.XsdElements
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
-    ///     An XML validation context.
+    ///     An XSD attribute model definition.
     /// </summary>
     /// =================================================================================================
-    public sealed class XmlValidationContext
+    public class XsdAttributeModelDefinition
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets the message factory.
+        ///     Gets or sets the attribute name.
         /// </summary>
         /// <value>
-        ///     The message factory.
+        ///     The name of the attribute.
         /// </value>
         /// =================================================================================================
-        public IXmlValidationMessageFactory MessageFactory { get; }
+        public string Name { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets the document.
+        ///     Gets or sets a value indicating whether the is required.
         /// </summary>
         /// <value>
-        ///     The document.
+        ///     True if is required, false if not.
         /// </value>
         /// =================================================================================================
-        public XDocument Document { get; }
+        public bool IsRequired { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets the failures.
+        ///     Gets or sets the data type of the value
         /// </summary>
         /// <value>
-        ///     The failures.
+        ///     The type of the value.
         /// </value>
         /// =================================================================================================
-        public IList<XmlValidationFailureResult> Failures { get; }
+        public XmlValidationDataTypeKind? ValueType { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Initializes a new instance of the <see cref="XmlValidationContext"/> class.
+        ///     Gets or sets the attribute value constraints.
         /// </summary>
-        /// <param name="doc">The document.</param>
-        /// <param name="failures">The failures.</param>
-        /// <param name="messageFactory">The message factory.</param>
+        /// <value>
+        ///     The attribute constraints.
+        /// </value>
         /// =================================================================================================
-        public XmlValidationContext(XDocument doc, IList<XmlValidationFailureResult> failures, 
-            IXmlValidationMessageFactory messageFactory)
+        public XsdValueConstraintModelDefinition Constraints { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="XsdAttributeModelDefinition"/> class.
+        /// </summary>
+        /// =================================================================================================
+        public XsdAttributeModelDefinition()
         {
-            Document = doc;
-            Failures = failures;
-            MessageFactory = messageFactory.IfIsNull(new DefaultXmlValidationMessageFactory());
+            Constraints = new XsdValueConstraintModelDefinition();
         }
     }
 }

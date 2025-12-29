@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 //  Assembly         : RzR.Shared.Entity.XmlFluentValidator
 //  Author           : RzR
-//  Created On       : 2025-12-09 20:12
+//  Created On       : 2025-12-26 12:12
 // 
 //  Last Modified By : RzR
-//  Last Modified On : 2025-12-09 20:13
+//  Last Modified On : 2025-12-26 15:39
 // ***********************************************************************
-//  <copyright file="XmlStepRecorder.cs" company="RzR SOFT & TECH">
+//  <copyright file="XsdValueConstraintModelDefinition.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
 //  </copyright>
 // 
@@ -14,121 +14,83 @@
 //  </summary>
 // ***********************************************************************
 
-#region U S A G E S
-
-using XmlFluentValidator.Enums;
-using XmlFluentValidator.Models.Message;
-
-#endregion
-
-namespace XmlFluentValidator.Models
+namespace XmlFluentValidator.Models.XsdElements
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
-    ///     An XML step recorder.
+    ///     An XSD value constraint model definition.
     /// </summary>
     /// =================================================================================================
-    public sealed class XmlStepRecorder
+    public class XsdValueConstraintModelDefinition
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the kind.
+        ///     Gets or sets the REGEX pattern.
         /// </summary>
         /// <value>
-        ///     The kind.
-        /// </value>
-        /// =================================================================================================
-        public XmlValidationRuleKind Kind { get; set; }
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Gets or sets the name of the attribute.
-        /// </summary>
-        /// <value>
-        ///     The name of the attribute.
-        /// </value>
-        /// =================================================================================================
-        public string AttributeName { get; set; }
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Gets or sets the pattern.
-        /// </summary>
-        /// <value>
-        ///     The pattern.
+        ///     The REGEX pattern.
         /// </value>
         /// =================================================================================================
         public string Pattern { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the minimum.
+        ///     Gets or sets the minimum length of the element/attribute.
         /// </summary>
         /// <value>
-        ///     The minimum value.
+        ///     The minimum length of the element/attribute.
         /// </value>
         /// =================================================================================================
-        public int? Min { get; set; }
+        public int? MinLength { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the maximum.
-        ///     The maximum for: length, in range max value
+        ///     Gets or sets the maximum length of the element/attribute.
         /// </summary>
         /// <value>
-        ///     The maximum value.
+        ///     The maximum length of the element/attribute.
         /// </value>
         /// =================================================================================================
-        public int? Max { get; set; }
+        public int? MaxLength { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the maximum occurs.
+        ///     Gets or sets the minimum inclusive value.
         /// </summary>
         /// <value>
-        ///     The maximum occurs.
+        ///     The minimum inclusive of the element/attribute.
         /// </value>
         /// =================================================================================================
-        public int? MaxOccurs { get; set; }
+        public int? MinInclusive { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the descriptor.
+        ///     Gets or sets the maximum inclusive value.
         /// </summary>
         /// <value>
-        ///     The descriptor.
+        ///     The maximum inclusive of the element/attribute.
         /// </value>
         /// =================================================================================================
-        public MessageDescriptor Descriptor { get; set; }
+        public int? MaxInclusive { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the element/attribute path.
+        ///     Gets or sets the minimum exclusive value.
         /// </summary>
         /// <value>
-        ///     The element/attribute path.
+        ///     The minimum exclusive of the element/attribute.
         /// </value>
         /// =================================================================================================
-        public string Path { get; set; }
+        public int? MinExclusive { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the type of the data.
+        ///     Gets or sets the maximum exclusive value.
         /// </summary>
         /// <value>
-        ///     The type of the data.
+        ///     The maximum exclusive of the element/attribute.
         /// </value>
         /// =================================================================================================
-        public XmlValidationDataTypeKind DataType { get; set; }
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Gets or sets a value indicating whether this object is inclusive validation.
-        /// </summary>
-        /// <value>
-        ///     True if this object is inclusive validation, false if not.
-        /// </value>
-        /// =================================================================================================
-        public bool IsInclusiveValidation { get; set; } = true;
+        public int? MaxExclusive { get; set; }
     }
 }

@@ -6,19 +6,19 @@ Element Rules
 
 | Method | Description | Example |
 |--------|-------------|---------|
-| .MustExist([message]) | The element must exist. | .ForPath("items/item").MustExist() |
-| .Count(predicate, [message]) | Limits how many times an element can appear. | .ForPath("items/item").Count(x => x > 1) |
-| .Value(predicate, [message]) | Set validation rule for element value. | .ForPath("items/item").Value(v => v.Contains("@")) |
-| .Attribute(name, predicate, [message]) | Set validation rule for element attribute. | .ForPath("items/item").Attribute("sku", v => v.IsPresent()) |
+| .WithElementMustExist([message]) | The element must exist. | .ForPath("items/item").MustExist() |
+| .WithElementCount(predicate, [message]) | Limits how many times an element can appear. | .ForPath("items/item").Count(x => x > 1) |
+| .WithElementValue(predicate, [message]) | Set validation rule for element value. | .ForPath("items/item").Value(v => v.Contains("@")) |
+| .WithAttribute(name, predicate, [message]) | Set validation rule for element attribute. | .ForPath("items/item").Attribute("sku", v => v.IsPresent()) |
 | .All(predicate, [message]) |   | .ForPath("items/item").All(e => e.IsNotNull()) |
 | .Any(predicate, [message]) |   | .ForPath("items/item").Any(e => e.IsNotNull()) |
 | .When(predicate, [message]) | When the given condition is true, continue validaction or stop  | .ForPath("items/item").When(doc => doc.IsNotNull()) |
 | .Optional([message]) | Marks the element as optional. Generates minOccurs="0" in XSD. | .ForPath("customer/phone").Optional() |
-| .Required([message]) | Marks the element as mandatory. Generates minOccurs="1" in XSD. | .ForPath("id").Required() |
-| .MatchesRegex(pattern, [message]) | Validates that element text matches a regex. Adds <xs:pattern> restriction. | .ForPath("email").MatchesRegex(@"&Hat;&lbrack;&Hat;&commat;&bsol;&#115;&rsqb;&plus;&commat;&lbrack;&Hat;&commat;&bsol;&#115;&rsqb;&plus;&bsol;&period;&lbrack;&Hat;&commat;&bsol;&#115;&rsqb;&plus;&dollar;") |
-| .InRange(min, max, [message]) | Validates that element text is numeric and within range. Adds <xs:minInclusive> and <xs:maxInclusive>. | .ForPath("age").InRange(18, 65) |
-| .Unique([message]) | Ensures element values are unique within their container. Generates <xs:unique> constraint. | .ForPath("items/item/code").Unique() |
-| .MaxOccurs(count, [message]) | Limits how many times an element can appear. Generates maxOccurs="count". | .ForPath("items/item").MaxOccurs(10) |
+| .WithElementRequired([message]) | Marks the element as mandatory. Generates minOccurs="1" in XSD. | .ForPath("id").Required() |
+| .WithElementMatchesRegex(pattern, [message]) | Validates that element text matches a regex. Adds <xs:pattern> restriction. | .ForPath("email").MatchesRegex(@"&Hat;&lbrack;&Hat;&commat;&bsol;&#115;&rsqb;&plus;&commat;&lbrack;&Hat;&commat;&bsol;&#115;&rsqb;&plus;&bsol;&period;&lbrack;&Hat;&commat;&bsol;&#115;&rsqb;&plus;&dollar;") |
+| .WithElementInRange(min, max, [message]) | Validates that element text is numeric and within range. Adds <xs:minInclusive> and <xs:maxInclusive>. | .ForPath("age").InRange(18, 65) |
+| .WithElementUnique([message]) | Ensures element values are unique within their container. Generates <xs:unique> constraint. | .ForPath("items/item/code").Unique() |
+| .WithElementMaxOccurs(count, [message]) | Limits how many times an element can appear. Generates maxOccurs="count". | .ForPath("items/item").MaxOccurs(10) |
 
 ---
 
@@ -26,10 +26,10 @@ Attribute Rules
 
 | Method | Description | Example |
 |--------|-------------|---------|
-| .RequiredAttribute(name, [message]) | Attribute must exist. Generates use="required". | .ForElement("item").RequiredAttribute("sku") |
-| .MatchesRegex(pattern, [message]) | Attribute value must match regex. Adds <xs:pattern>. | .ForElement("item@sku").MatchesRegex(@"^[A-Z]{3}-\d{3}$") |
-| .AttributeInRange(name, min, max, [message]) | Attribute numeric value must be within range. Adds <xs:minInclusive> and <xs:maxInclusive>. | .ForElement("item@qty").AttributeInRange("qty", 1, 100) |
-| .UniqueAttribute(name, [message]) | Attribute values must be unique. Generates <xs:unique> constraint. | .ForElement("item@sku").UniqueAttribute("sku") |
+| .WithAttributeRequired(name, [message]) | Attribute must exist. Generates use="required". | .ForElement("item").WithAttributeRequired("sku") |
+| .WithAttributeMatchesRegex(pattern, [message]) | Attribute value must match regex. Adds <xs:pattern>. | .ForElement("item@sku").WithAttributeMatchesRegex(@"^[A-Z]{3}-\d{3}$") |
+| .WithAttributeInRange(name, min, max, [message]) | Attribute numeric value must be within range. Adds <xs:minInclusive> and <xs:maxInclusive>. | .ForElement("item@qty").WithAttributeInRange("qty", 1, 100) |
+| .WithAttributeUnique(name, [message]) | Attribute values must be unique. Generates <xs:unique> constraint. | .ForElement("item@sku").WithAttributeUnique("sku") |
 
 ---
 
