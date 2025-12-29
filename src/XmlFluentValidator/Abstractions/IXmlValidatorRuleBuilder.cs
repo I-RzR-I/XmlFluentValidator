@@ -33,6 +33,8 @@ namespace XmlFluentValidator.Abstractions
     /// =================================================================================================
     public interface IXmlValidatorRuleBuilder
     {
+        #region ELEMENT
+
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Must exist. The element must exist.
@@ -42,7 +44,7 @@ namespace XmlFluentValidator.Abstractions
         ///     An IXmlValidatorRuleBuilder.
         /// </returns>
         /// =================================================================================================
-        IXmlValidatorRuleBuilder MustExist(string message = null);
+        IXmlValidatorRuleBuilder WithElementMustExist(string message = null);
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -54,7 +56,7 @@ namespace XmlFluentValidator.Abstractions
         ///     An IXmlValidatorRuleBuilder.
         /// </returns>
         /// =================================================================================================
-        IXmlValidatorRuleBuilder Count(Func<int, bool> predicate, string message = null);
+        IXmlValidatorRuleBuilder WithElementCount(Func<int, bool> predicate, string message = null);
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -67,7 +69,111 @@ namespace XmlFluentValidator.Abstractions
         ///     An IXmlValidatorRuleBuilder.
         /// </returns>
         /// =================================================================================================
-        IXmlValidatorRuleBuilder Value(Func<string, bool> predicate, string message = null);
+        IXmlValidatorRuleBuilder WithElementValue(Func<string, bool> predicate, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Optional.
+        ///     Specify the element validation as not required.
+        /// </summary>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementOptional(string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     IsRequired.
+        ///     Set element validation rule as required.
+        /// </summary>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementRequired(string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Matches RegEx.
+        ///     Set element validation rule as regular expression.
+        /// </summary>
+        /// <param name="pattern">Specifies the RegEx pattern.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementMatchesRegex(string pattern, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     In range.
+        ///     Set element validation rule as in range between minimum and maximum value.
+        /// </summary>
+        /// <param name="min">The minimum.</param>
+        /// <param name="max">The maximum.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementInRange(int min, int max, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Uniques the given message.
+        ///     Set element validation rule as unique value.
+        /// </summary>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementUnique(string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Maximum occurs.
+        /// </summary>
+        /// <param name="max">The maximum.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementMaxOccurs(int max, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With element value length.
+        /// </summary>
+        /// <param name="min">The minimum.</param>
+        /// <param name="max">(Optional) The maximum.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementValueLength(int min, int? max = null, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With element data type.
+        /// </summary>
+        /// <param name="dataType">Type of the data.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementDataType(XmlValidationDataTypeKind dataType, string message = null);
+
+        #endregion
+
+        #region ATTRIBUTE
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -81,7 +187,145 @@ namespace XmlFluentValidator.Abstractions
         ///     An IXmlValidatorRuleBuilder.
         /// </returns>
         /// =================================================================================================
-        IXmlValidatorRuleBuilder Attribute(string name, Func<string, bool> predicate, string message = null);
+        IXmlValidatorRuleBuilder WithAttribute(string name, Func<string, bool> predicate, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     IsRequired attribute.
+        ///     Set attribute validation rule as unique value.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeRequired(string name, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Attribute matches RegEx.
+        ///     Set attribute validation rule as regular expression.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="pattern">Specifies the RegEx pattern.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeMatchesRegex(string name, string pattern, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Attribute in range.
+        ///     Set attribute validation rule as in range between minimum and maximum value.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="min">The minimum allowed value.</param>
+        /// <param name="max">The maximum allowed value.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeInRange(string name, int min, int max, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Attribute unique.
+        ///     Set specific attribute as required.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeUnique(string name, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Element attribute cross rule.
+        ///     Set cross validation for element and specific element attribute.
+        /// </summary>
+        /// <param name="attributeName">Name of the attribute.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder ElementAttributeCrossRule(string attributeName, Func<string, string, bool> predicate,
+            string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With attribute value length.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="min">The minimum.</param>
+        /// <param name="max">(Optional) The maximum.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeValueLength(string name, int min, int? max = null, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With attribute data type.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="dataType">Type of the data.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeDataType(string name, XmlValidationDataTypeKind dataType, string message = null);
+
+        #endregion
+
+        #region MESSAGES
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With message. 
+        ///     Set custom validation message.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <param name="arguments">The context, message arguments.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithMessage(string template, MessageArguments arguments);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With message. Set custom validation message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithMessage(string message);
+        
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With message for all.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithMessageForAll(string message);
+
+        #endregion
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -118,151 +362,6 @@ namespace XmlFluentValidator.Abstractions
         /// </returns>
         /// =================================================================================================
         IXmlValidatorRuleBuilder When(Func<XDocument, bool> condition, string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Optional.
-        ///     Specify the element validation as not required.
-        /// </summary>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder Optional(string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Required.
-        ///     Set element validation rule as required.
-        /// </summary>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder Required(string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Matches RegEx.
-        ///     Set element validation rule as regular expression.
-        /// </summary>
-        /// <param name="pattern">Specifies the RegEx pattern.</param>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder MatchesRegex(string pattern, string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     In range.
-        ///     Set element validation rule as in range between minimum and maximum value.
-        /// </summary>
-        /// <param name="min">The minimum.</param>
-        /// <param name="max">The maximum.</param>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder InRange(int min, int max, string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Uniques the given message.
-        ///     Set element validation rule as unique value.
-        /// </summary>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder Unique(string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Maximum occurs.
-        /// </summary>
-        /// <param name="max">The maximum.</param>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder MaxOccurs(int max, string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Required attribute.
-        ///     Set attribute validation rule as unique value.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder RequiredAttribute(string name, string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Attribute matches RegEx.
-        ///     Set attribute validation rule as regular expression.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="pattern">Specifies the RegEx pattern.</param>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder AttributeMatchesRegex(string name, string pattern, string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Attribute in range.
-        ///     Set attribute validation rule as in range between minimum and maximum value.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="min">The minimum allowed value.</param>
-        /// <param name="max">The maximum allowed value.</param>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder AttributeInRange(string name, int min, int max, string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Attribute unique.
-        ///     Set specific attribute as required.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder AttributeUnique(string name, string message = null);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Element attribute cross rule.
-        ///     Set cross validation for element and specific element attribute.
-        /// </summary>
-        /// <param name="attributeName">Name of the attribute.</param>
-        /// <param name="predicate">The predicate.</param>
-        /// <param name="message">(Optional) The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder ElementAttributeCrossRule(string attributeName, Func<string, string, bool> predicate,
-            string message = null);
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -350,43 +449,7 @@ namespace XmlFluentValidator.Abstractions
         /// </returns>
         /// =================================================================================================
         IXmlValidatorRuleBuilder StopOnFailure();
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     With message. 
-        ///     Set custom validation message.
-        /// </summary>
-        /// <param name="template">The template.</param>
-        /// <param name="arguments">The context, message arguments.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder WithMessage(string template, MessageArguments arguments);
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     With message. Set custom validation message.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder WithMessage(string message);
-
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     With message for all.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns>
-        ///     An IXmlValidatorRuleBuilder.
-        /// </returns>
-        /// =================================================================================================
-        IXmlValidatorRuleBuilder WithMessageForAll(string message);
-
+        
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Gets the done.

@@ -52,6 +52,10 @@
 	  <PackageReference Include="DomainCommonExtensions" Version="4.2.1.4986" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Models\Regex\" />
+	</ItemGroup>
+
 	<ProjectExtensions>
 		<VisualStudio>
 			<UserProperties BuildVersion_StartDate="2022/9/15" />

@@ -54,6 +54,16 @@ namespace XmlFluentValidator.Enums
         /// </summary>
         ElementMaxOccurs,
 
+        /// <summary>
+        ///     An enum constant representing the element value length option.
+        /// </summary>
+        ElementValueLength,
+
+        /// <summary>
+        ///     An enum constant representing the element data type option.
+        /// </summary>
+        ElementDataType,
+
         /* Attribute rules */
         /// <summary>
         ///     An enum constant representing the attribute required option.
@@ -74,6 +84,16 @@ namespace XmlFluentValidator.Enums
         ///     An enum constant representing the attribute unique option.
         /// </summary>
         AttributeUnique,
+
+        /// <summary>
+        ///     An enum constant representing the attribute value length option.
+        /// </summary>
+        AttributeValueLength,
+
+        /// <summary>
+        ///     An enum constant representing the attribute data type option.
+        /// </summary>
+        AttributeDataType,
 
         /* Runtime-only */
         /// <summary>

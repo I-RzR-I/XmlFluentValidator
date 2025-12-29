@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 //  Assembly         : RzR.Shared.Entity.XmlFluentValidator
 //  Author           : RzR
-//  Created On       : 2025-12-09 20:12
+//  Created On       : 2025-12-26 12:12
 // 
 //  Last Modified By : RzR
-//  Last Modified On : 2025-12-09 20:13
+//  Last Modified On : 2025-12-26 15:39
 // ***********************************************************************
-//  <copyright file="XmlStepRecorder.cs" company="RzR SOFT & TECH">
+//  <copyright file="XsdElementModelDefinition.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
 //  </copyright>
 // 
@@ -16,70 +16,49 @@
 
 #region U S A G E S
 
+using System.Collections.Generic;
 using XmlFluentValidator.Enums;
-using XmlFluentValidator.Models.Message;
 
 #endregion
 
-namespace XmlFluentValidator.Models
+namespace XmlFluentValidator.Models.XsdElements
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
-    ///     An XML step recorder.
+    ///     An XSD element model definition.
     /// </summary>
     /// =================================================================================================
-    public sealed class XmlStepRecorder
+    public class XsdElementModelDefinition
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the kind.
+        ///     Gets or sets the element name.
         /// </summary>
         /// <value>
-        ///     The kind.
+        ///     The element name.
         /// </value>
         /// =================================================================================================
-        public XmlValidationRuleKind Kind { get; set; }
+        public string Name { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the name of the attribute.
+        ///     Gets or sets the element path.
         /// </summary>
         /// <value>
-        ///     The name of the attribute.
+        ///     The element path.
         /// </value>
         /// =================================================================================================
-        public string AttributeName { get; set; }
+        public string Path { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the pattern.
+        ///     Gets or sets the minimum occurs.
         /// </summary>
         /// <value>
-        ///     The pattern.
+        ///     The minimum occurs.
         /// </value>
         /// =================================================================================================
-        public string Pattern { get; set; }
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Gets or sets the minimum.
-        /// </summary>
-        /// <value>
-        ///     The minimum value.
-        /// </value>
-        /// =================================================================================================
-        public int? Min { get; set; }
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Gets or sets the maximum.
-        ///     The maximum for: length, in range max value
-        /// </summary>
-        /// <value>
-        ///     The maximum value.
-        /// </value>
-        /// =================================================================================================
-        public int? Max { get; set; }
+        public int? MinOccurs { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -93,42 +72,71 @@ namespace XmlFluentValidator.Models
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the descriptor.
+        ///     Gets or sets the type of the value.
         /// </summary>
         /// <value>
-        ///     The descriptor.
+        ///     The type of the value.
         /// </value>
         /// =================================================================================================
-        public MessageDescriptor Descriptor { get; set; }
+        public XmlValidationDataTypeKind? LengthValueType { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the element/attribute path.
+        ///     Gets or sets the type of the value.
         /// </summary>
         /// <value>
-        ///     The element/attribute path.
+        ///     The type of the value.
         /// </value>
         /// =================================================================================================
-        public string Path { get; set; }
+        public XmlValidationDataTypeKind? ValueType { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets the type of the data.
+        ///     Gets or sets the element constraints.
         /// </summary>
         /// <value>
-        ///     The type of the data.
+        ///     The element constraints.
         /// </value>
         /// =================================================================================================
-        public XmlValidationDataTypeKind DataType { get; set; }
+        public XsdValueConstraintModelDefinition Constraints { get; set; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets a value indicating whether this object is inclusive validation.
+        ///     Gets or sets the element attributes.
         /// </summary>
         /// <value>
-        ///     True if this object is inclusive validation, false if not.
+        ///     The element attributes.
         /// </value>
         /// =================================================================================================
-        public bool IsInclusiveValidation { get; set; } = true;
+        public Dictionary<string, XsdAttributeModelDefinition> Attributes { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Gets or sets the element children.
+        /// </summary>
+        /// <value>
+        ///     The element children.
+        /// </value>
+        /// =================================================================================================
+        public Dictionary<string, XsdElementModelDefinition> Children { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     The element documentation.
+        /// </summary>
+        /// =================================================================================================
+        public string Documentation { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="XsdElementModelDefinition"/> class.
+        /// </summary>
+        /// =================================================================================================
+        public XsdElementModelDefinition()
+        {
+            Constraints = new XsdValueConstraintModelDefinition();
+            Attributes = new Dictionary<string, XsdAttributeModelDefinition>();
+            Children = new Dictionary<string, XsdElementModelDefinition>();
+        }
     }
 }

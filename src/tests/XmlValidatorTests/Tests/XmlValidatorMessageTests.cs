@@ -59,8 +59,8 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator("order")
                 .ForElement("items/item@sku")
-                .Required()
-                .MatchesRegex(@"^[A-Z]{3}-\d{3}$").WithMessage("SKU validation fails.")
+                .WithElementRequired()
+                .WithElementMatchesRegex(@"^[A-Z]{3}-\d{3}$").WithMessage("SKU validation fails.")
 
                 .Done();
 
@@ -101,8 +101,8 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator("order")
                 .ForElement("items/item@sku")
-                .Required()
-                .MatchesRegex(@"^[A-Z]{3}-\d{3}$", "SKU internal message").WithMessage("SKU validation fails.")
+                .WithElementRequired()
+                .WithElementMatchesRegex(@"^[A-Z]{3}-\d{3}$", "SKU internal message").WithMessage("SKU validation fails.")
 
                 .Done();
 
@@ -143,8 +143,8 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator("order")
                 .ForElement("items/item@sku")
-                .Required()
-                .MatchesRegex(@"^[A-Z]{3}-\d{3}$", "SKU internal message")
+                .WithElementRequired()
+                .WithElementMatchesRegex(@"^[A-Z]{3}-\d{3}$", "SKU internal message")
 
                 .Done();
 
@@ -184,7 +184,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/customer/id")
-                .MustExist().WithMessage("Id is missing")
+                .WithElementMustExist().WithMessage("Id is missing")
                 .Done();
 
             var result = validator.Validate(xml);
@@ -223,7 +223,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/customer/id")
-                .MustExist("No id").WithMessage("Id is missing")
+                .WithElementMustExist("No id").WithMessage("Id is missing")
                 .Done();
 
             var result = validator.Validate(xml);
@@ -262,7 +262,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/customer/id")
-                .MustExist("No id")
+                .WithElementMustExist("No id")
                 .Done();
 
             var result = validator.Validate(xml);
@@ -301,7 +301,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/customer/id")
-                .MustExist()
+                .WithElementMustExist()
                 .Done();
 
             var result = validator.Validate(xml);
@@ -342,8 +342,8 @@ namespace XmlValidatorTests.Tests
             var validator = new XmlValidator()
                 .ForPath("/order/customer/id").WithMessage("Temp")
                 .WithMessageForAll("Id is not valid")
-                .Required("Req message").WithMessage("Req with message")
-                .Value(val =>
+                .WithElementRequired("Req message").WithMessage("Req with message")
+                .WithElementValue(val =>
                 {
                     var isNumber = int.TryParse(val, out _);
 

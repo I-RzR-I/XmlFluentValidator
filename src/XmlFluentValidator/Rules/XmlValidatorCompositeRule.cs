@@ -40,7 +40,7 @@ namespace XmlFluentValidator.Rules
     /// </summary>
     /// <seealso cref="T:XmlFluentValidator.Abstractions.IXmlValidatorRule"/>
     /// =================================================================================================
-    public class XmlValidatorCompositeRule : IXmlValidatorRule
+    public sealed class XmlValidatorCompositeRule : IXmlValidatorRule
     {
         #region PRIVATE FIELDS
 

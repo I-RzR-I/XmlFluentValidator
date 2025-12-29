@@ -8,9 +8,9 @@
 This library allows you to:
 - Define XML validation rules with a fluent builder syntax.
 - Validate XML documents at runtime.
+- Generate XSD schemas that reflect those rules.
 
 TODO:
-- Generate XSD schemas that reflect those rules.
 - Document runtime-only rules (like custom logic) in <xs:annotation> blocks.
 
 ---
@@ -30,18 +30,18 @@ TODO:
 📖 Fluent API Reference
 
 Element Rules
-- `.Required()` → element must exist.
-- `.Optional()` → element may be absent.
-- `.MatchesRegex(pattern)` → element text must match regex.
-- `.InRange(min, max)` → element text must be numeric within range.
-- `.Unique()` → element values must be unique.
+- `.WithElementRequired()` → element must exist.
+- `.WithElementOptional()` → element may be absent.
+- `.WithElementMatchesRegex(pattern)` → element text must match regex.
+- `.WithElementInRange(min, max)` → element text must be numeric within range.
+- `.WithElementUnique()` → element values must be unique.
 - etc
 
 Attribute Rules
-- `.RequiredAttribute(name)` → attribute must exist.
-- `.MatchesRegex(pattern)` → attribute value must match regex.
-- `.AttributeInRange(name, min, max)` → attribute numeric range.
-- `.UniqueAttribute(name)` → attribute values must be unique.
+- `.WithAttributeRequired(name)` → attribute must exist.
+- `.WithAttributeMatchesRegex(pattern)` → attribute value must match regex.
+- `.WithAttributeInRange(name, min, max)` → attribute numeric range.
+- `.WithAttributeUnique(name)` → attribute values must be unique.
 - etc
 
 Custom Rules

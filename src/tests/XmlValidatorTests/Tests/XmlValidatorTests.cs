@@ -51,17 +51,17 @@ namespace XmlValidatorTests.Tests
             var validator = new XmlValidator()
                 .ForPath("/order/id")
                 .WithName("Order Id")
-                .MustExist("Order id is required.")
-                .Value(v => int.TryParse(v, out var n) && n > 0, "Order id must be a positive integer.")
+                .WithElementMustExist("Order id is required.")
+                .WithElementValue(v => int.TryParse(v, out var n) && n > 0, "Order id must be a positive integer.")
                 .Done()
                 .ForPath("/order/customer/email")
-                .MustExist("Customer email is required.")
-                .Value(v => v.Contains("@"), "Customer email must be valid.")
+                .WithElementMustExist("Customer email is required.")
+                .WithElementValue(v => v.Contains("@"), "Customer email must be valid.")
                 .Done()
                 .ForPath("/order/items/item")
-                .Count(c => c >= 1, "At least one item is required.")
-                .Attribute("sku", v => v.IsPresent(), "Item SKU is required.")
-                .Attribute("qty", v => int.TryParse(v, out var n) && n > 0, "Quantity must be a positive integer.")
+                .WithElementCount(c => c >= 1, "At least one item is required.")
+                .WithAttribute("sku", v => v.IsPresent(), "Item SKU is required.")
+                .WithAttribute("qty", v => int.TryParse(v, out var n) && n > 0, "Quantity must be a positive integer.")
                 .Done();
 
             var result = validator.Validate(xml);
@@ -88,7 +88,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/discountCode")
-                .Required("Ele required").WithMessage("Ele X required x2")
+                .WithElementRequired("Ele required").WithMessage("Ele X required x2")
                 .When(doc =>
                 {
                     //return false;
@@ -139,7 +139,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/discountCode")
-                .Required("Ele required").WithMessage("Ele X required x2")
+                .WithElementRequired("Ele required").WithMessage("Ele X required x2")
                 .Done()
                 .ForPath("/order/discountCode")
                 .When(doc =>
@@ -175,7 +175,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/discountCode")
-                .Required("Ele required").WithMessage("Ele X required x2")
+                .WithElementRequired("Ele required").WithMessage("Ele X required x2")
                 .Done()
                 .ForPath("/order/discountCode")
                 .When(doc =>
@@ -210,11 +210,11 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/items/item")
-                .Count(c => c >= 1)
+                .WithElementCount(c => c >= 1)
                 .WithMessage("Order must contain at least {Min} item(s).", MessageArguments.From(("Min", 1)))
                 .Done()
                 .ForPath("/order/id")
-                .Value(v => int.TryParse(v, out var n) && n > 0)
+                .WithElementValue(v => int.TryParse(v, out var n) && n > 0)
                 .WithMessage("Order Id '{XPath}' is invalid: {Raw}", null)
                 .Done();
 
@@ -242,15 +242,15 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/items/item")
-                .Count(c => c >= 1)
+                .WithElementCount(c => c >= 1)
                 .WithMessage("Order must contain at least {Min} item(s).", MessageArguments.From(("Min", 1)))
                 .Done()
                 .ForPath("/order/items/item")
-                .Attribute("qty", v => int.TryParse(v, out var n) && n > 0)
+                .WithAttribute("qty", v => int.TryParse(v, out var n) && n > 0)
                 .WithMessage("Item quantity at {XPath} must be positive. Found: {Raw}", null)
                 .Done()
                 .ForPath("/order/id")
-                .Value(v => int.TryParse(v, out var n) && n > 0)
+                .WithElementValue(v => int.TryParse(v, out var n) && n > 0)
                 .WithMessage("Order Id '{XPath}' is invalid: {Raw}", null)
                 .Done();
 
@@ -278,16 +278,16 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/customer/email")
-                .MustExist()
-                .MatchesRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+                .WithElementMustExist()
+                .WithElementMatchesRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
                 .Done()
 
                 .ForPath("/order/items/item/@qty")
-                .InRange(1, 100)
+                .WithElementInRange(1, 100)
                 .Done()
 
                 .ForPath("/order/items/item/@sku")
-                .Unique()
+                .WithElementUnique()
                 .Done();
 
             Assert.ThrowsException<InvalidOperationException>(() => validator.Validate(xml));
@@ -309,16 +309,16 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/customer/email")
-                .MustExist()
-                .MatchesRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+                .WithElementMustExist()
+                .WithElementMatchesRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
                 .Done()
 
                 .ForPath("/order/items/item")
-                .AttributeInRange("qty", 1, 100)
+                .WithAttributeInRange("qty", 1, 100)
                 .Done()
 
                 .ForPath("/order/items/item")
-                .AttributeUnique("sku")
+                .WithAttributeUnique("sku")
                 .Done();
 
             var result = validator.Validate(xml);
@@ -344,17 +344,17 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/id")
-                .Required()
+                .WithElementRequired()
                 .Done()
 
                 .ForPath("/order/items/item")
-                .Attribute("sku", v => v.IsPresent())
-                .Required("Item SKU is required.")
+                .WithAttribute("sku", v => v.IsPresent())
+                .WithElementRequired("Item SKU is required.")
                 .Done()
 
                 .ForPath("/order/customer/email")
-                .Required()
-                .MatchesRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+                .WithElementRequired()
+                .WithElementMatchesRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
                 .Done();
 
             var result = validator.Validate(xml);
@@ -380,10 +380,10 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/items/item")
-                .RequiredAttribute("sku") // must exist and not be empty
-                .AttributeMatchesRegex("sku", @"^[A-Z]{3}-\d{3}$") // format check
-                .AttributeInRange("qty", 1, 100) // numeric range
-                .AttributeUnique("sku") // no duplicates allowed
+                .WithAttributeRequired("sku") // must exist and not be empty
+                .WithAttributeMatchesRegex("sku", @"^[A-Z]{3}-\d{3}$") // format check
+                .WithAttributeInRange("qty", 1, 100) // numeric range
+                .WithAttributeUnique("sku") // no duplicates allowed
                 .Done();
 
             var result = validator.Validate(xml);
@@ -409,10 +409,10 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                 .ForPath("/order/items/item")
-                .RequiredAttribute("sku") // must exist and not be empty
-                .AttributeMatchesRegex("sku", @"^[A-Z]{3}-\d{3}$") // format check
-                .AttributeInRange("qty", 1, 100) // numeric range
-                .AttributeUnique("sku") // no duplicates allowed
+                .WithAttributeRequired("sku") // must exist and not be empty
+                .WithAttributeMatchesRegex("sku", @"^[A-Z]{3}-\d{3}$") // format check
+                .WithAttributeInRange("qty", 1, 100) // numeric range
+                .WithAttributeUnique("sku") // no duplicates allowed
                 .Done();
 
             var result = validator.Validate(xml);
@@ -554,7 +554,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                     .ForPath("/order/items/item")
-                    .RequiredAttribute("qty")
+                    .WithAttributeRequired("qty")
                     .Done()
                     .GlobalRule(doc =>
                     {
@@ -597,7 +597,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                     .ForPath("/order/items/item")
-                    .RequiredAttribute("qty")
+                    .WithAttributeRequired("qty")
                     .Done()
                     .GlobalRule(doc =>
                     {
@@ -644,7 +644,7 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator()
                     .ForPath("/order/items/item")
-                    .RequiredAttribute("qty")
+                    .WithAttributeRequired("qty")
                     .Done()
                     .GlobalRule(doc =>
                     {
@@ -690,8 +690,8 @@ namespace XmlValidatorTests.Tests
 
             var validator = new XmlValidator("order")
                 .ForElement("items/item@sku")
-                .Required()
-                .MatchesRegex(@"^[A-Z]{3}-\d{3}$").WithMessage("SKU validation fails.")
+                .WithElementRequired()
+                .WithElementMatchesRegex(@"^[A-Z]{3}-\d{3}$").WithMessage("SKU validation fails.")
 
                 .Done();
 

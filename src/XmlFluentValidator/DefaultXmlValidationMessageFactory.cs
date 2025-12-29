@@ -32,7 +32,7 @@ namespace XmlFluentValidator
     /// </summary>
     /// <seealso cref="T:XmlFluentValidator.Abstractions.Message.IXmlValidationMessageFactory"/>
     /// =================================================================================================
-    public class DefaultXmlValidationMessageFactory : IXmlValidationMessageFactory
+    public sealed class DefaultXmlValidationMessageFactory : IXmlValidationMessageFactory
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
