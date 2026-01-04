@@ -27,6 +27,7 @@ using System.Text.RegularExpressions;
 using System.Xml.XPath;
 using XmlFluentValidator.Abstractions;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Extensions;
 using XmlFluentValidator.Helpers.Internal;
 using XmlFluentValidator.Models;
 using XmlFluentValidator.Models.Message;
@@ -227,6 +228,7 @@ namespace XmlFluentValidator.Rules
         public IXmlValidatorRuleBuilder WithElementInRange(
             int min, 
             int max, 
+            bool isInclusive = true,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -236,7 +238,8 @@ namespace XmlFluentValidator.Rules
                 Min = min,
                 Max = max,
                 Descriptor = DefaultMessageDescriptors.ElementAttributeInRangeFailed,
-                Path = _xpath
+                Path = _xpath,
+                IsInclusiveValidation = isInclusive
             });
 
             _steps.Add(doc =>
@@ -247,7 +250,7 @@ namespace XmlFluentValidator.Rules
                 {
                     if (int.TryParse(e.Value, out var n))
                     {
-                        if (n < min || n > max)
+                        if (n.IsInRange(min, max, isInclusive).IsFalse())
                         {
                             var path = GetElementPath(e);
                             var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementInRangeWithValue,

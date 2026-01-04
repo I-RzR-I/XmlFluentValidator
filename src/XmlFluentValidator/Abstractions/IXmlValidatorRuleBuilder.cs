@@ -110,17 +110,18 @@ namespace XmlFluentValidator.Abstractions
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     In range.
-        ///     Set element validation rule as in range between minimum and maximum value.
+        ///     In range. Set element validation rule as in range between minimum and maximum value.
         /// </summary>
         /// <param name="min">The minimum.</param>
         /// <param name="max">The maximum.</param>
+        /// <param name="isInclusive">(Optional) True if is inclusive, false if not.</param>
         /// <param name="message">(Optional) The message.</param>
         /// <returns>
         ///     An IXmlValidatorRuleBuilder.
         /// </returns>
         /// =================================================================================================
-        IXmlValidatorRuleBuilder WithElementInRange(int min, int max, string message = null);
+        IXmlValidatorRuleBuilder WithElementInRange(int min, int max,
+            bool isInclusive = true, string message = null);
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -218,18 +219,20 @@ namespace XmlFluentValidator.Abstractions
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Attribute in range.
-        ///     Set attribute validation rule as in range between minimum and maximum value.
+        ///     Attribute in range. Set attribute validation rule as in range between minimum and maximum
+        ///     value.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="min">The minimum allowed value.</param>
         /// <param name="max">The maximum allowed value.</param>
+        /// <param name="isInclusive">(Optional) True if is inclusive, false if not.</param>
         /// <param name="message">(Optional) The message.</param>
         /// <returns>
         ///     An IXmlValidatorRuleBuilder.
         /// </returns>
         /// =================================================================================================
-        IXmlValidatorRuleBuilder WithAttributeInRange(string name, int min, int max, string message = null);
+        IXmlValidatorRuleBuilder WithAttributeInRange(string name, int min, int max,
+            bool isInclusive = true, string message = null);
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>

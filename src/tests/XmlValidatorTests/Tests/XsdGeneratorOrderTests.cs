@@ -139,6 +139,7 @@ namespace XmlValidatorTests.Tests
                 .Done()
                 .ForPath("Order/Items/Item/Quantity")
                     .WithElementRequired()
+                    .WithElementInRange(1, 100)
                 .Done()
                 .ForPath("Order/Items/Item/Price")
                     .WithElementRequired()
