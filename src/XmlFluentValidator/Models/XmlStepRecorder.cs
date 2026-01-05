@@ -150,7 +150,7 @@ namespace XmlFluentValidator.Models
         ///     The in range enumerator.
         /// </value>
         /// =================================================================================================
-        public IEnumerable<string> InRangeEnumerator { get; set; }
+        public IEnumerable<string> InRangeEnumerator { get; set; } = new List<string>();
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>

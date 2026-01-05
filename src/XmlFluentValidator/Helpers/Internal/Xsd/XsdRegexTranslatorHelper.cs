@@ -81,9 +81,10 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// =================================================================================================
         public static RegexTranslationResult Translate(string regexValue)
         {
-            DomainEnsure.IsNotNullOrEmpty(regexValue, nameof(regexValue), "Regex must not be empty");
+            if (regexValue.IsMissing())
+                XException.Throw<XUnsupportedRegexException>(XDefaultMessages.RegexMissing);
 
-            bool caseInsensitive = regexValue.StartsWith("(?i)");
+            var caseInsensitive = regexValue.StartsWith("(?i)");
             var regex = caseInsensitive ?
                 regexValue.Length > 4
                     ? regexValue.Substring(4)
@@ -103,7 +104,9 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
 
             // Expand shorthand classes
             foreach (var kv in ShorthandReplacements)
+            {
                 result = result.Replace(kv.Key, kv.Value);
+            }
 
             if (caseInsensitive.IsTrue())
             {
@@ -140,7 +143,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Reject unsupported.
         /// </summary>
-        /// <exception cref="UnsupportedRegexException">
+        /// <exception cref="XUnsupportedRegexException">
         ///     Thrown when an Unsupported RegEx error condition occurs.
         /// </exception>
         /// <param name="regex">The RegEx.</param>
@@ -150,7 +153,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
             foreach (var pattern in UnsupportedPatterns)
             {
                 if (Regex.IsMatch(regex, pattern))
-                    throw new UnsupportedRegexException($"Unsupported regex construct: {pattern}");
+                    XException.Throw<XUnsupportedRegexException>(XDefaultMessages.UnsupportedRegexPattern.FormatWith(pattern));
             }
         }
     }

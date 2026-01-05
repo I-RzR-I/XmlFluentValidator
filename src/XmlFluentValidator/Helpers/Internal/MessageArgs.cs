@@ -16,6 +16,11 @@
 
 namespace XmlFluentValidator.Helpers.Internal
 {
+    /// -------------------------------------------------------------------------------------------------
+    /// <summary>
+    ///     Arguments for message.
+    /// </summary>
+    /// =================================================================================================
     internal static class MessageArgs
     {
         public const string Path = "Path";

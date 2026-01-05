@@ -16,12 +16,12 @@
 
 #region U S A G E S
 
-using System;
 using System.Collections.Generic;
 using DomainCommonExtensions.ArraysExtensions;
 using DomainCommonExtensions.CommonExtensions;
 using DomainCommonExtensions.DataTypeExtensions;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Exceptions;
 using XmlFluentValidator.Extensions;
 using XmlFluentValidator.Models;
 using XmlFluentValidator.Models.XsdElements;
@@ -84,18 +84,14 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the step described by xml recorded step.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     Thrown when one or more arguments are outside the required range.
-        /// </exception>
+        /// <exception cref="XMissingArgException" />
+        /// <exception cref="XValidationRuleOutOfRangeException" />
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
         private void ApplyStep(XmlStepRecorder step)
         {
-            if (string.IsNullOrWhiteSpace(step.Path))
-                throw new InvalidOperationException("Step has no path");
+            if (step.Path.IsMissing())
+                XException.Throw<XMissingArgException>(XDefaultMessages.StepWithOutPath);
 
             var element = _builder.GetOrCreate(step.Path);
 
@@ -174,7 +170,8 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    XException.Throw<XValidationRuleOutOfRangeException>();
+                    break;
             }
         }
 
@@ -182,9 +179,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the element exact length.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XApplyInvalidOperationException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
@@ -193,7 +188,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
             element.LengthValueType ??= XmlValidationDataTypeKind.String;
 
             if (element.LengthValueType.IsEqualTo(XmlValidationDataTypeKind.String).IsFalse())
-                throw new InvalidOperationException($"Length applied to non-string element '{element.Path}'");
+                XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.ElementExactLengthApplyToNotString, element.Path);
 
             if (step.ValueExactLength.IsNotNull())
                 element.Constraints.ExactLength = step.ValueExactLength;
@@ -206,22 +201,21 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the attribute exact length.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XMissingArgException" />
+        /// <exception cref="XApplyInvalidOperationException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
         private void ApplyAttributeExactLength(XsdElementModelDefinition element, XmlStepRecorder step)
         {
-            if (string.IsNullOrWhiteSpace(step.AttributeName))
-                throw new InvalidOperationException("Attribute name required");
+            if (step.AttributeName.IsMissing())
+                XException.Throw<XMissingArgException>(XDefaultMessages.AttributeNameMissing);
 
             var attr = GetOrCreateAttribute(element, step.AttributeName);
             attr.ValueType ??= XmlValidationDataTypeKind.String;
 
             if (attr.ValueType.IsEqualTo(XmlValidationDataTypeKind.String).IsFalse())
-                throw new InvalidOperationException($"Length applied to non-string attribute '{attr.Name}'");
+                XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.AttributeExactLengthApplyToNotString, attr.Name);
 
             if (step.ValueExactLength.IsNotNull())
                 attr.Constraints.ExactLength = step.ValueExactLength;
@@ -247,16 +241,14 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the attribute enumeration.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XMissingArgException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
         private void ApplyAttributeEnumeration(XsdElementModelDefinition element, XmlStepRecorder step)
         {
-            if (string.IsNullOrWhiteSpace(step.AttributeName))
-                throw new InvalidOperationException("Attribute name required");
+            if (step.AttributeName.IsMissing())
+                XException.Throw<XMissingArgException>(XDefaultMessages.AttributeNameMissing);
 
             var attr = GetOrCreateAttribute(element, step.AttributeName);
 
@@ -268,24 +260,22 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the attribute data type.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XMissingArgException" />
+        /// <exception cref="XApplyInvalidOperationException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
         private void ApplyAttributeDataType(XsdElementModelDefinition element, XmlStepRecorder step)
         {
-            if (string.IsNullOrWhiteSpace(step.AttributeName))
-                throw new InvalidOperationException("Attribute name required");
+            if (step.AttributeName.IsMissing())
+                XException.Throw<XMissingArgException>(XDefaultMessages.AttributeNameMissing);
 
             var attr = GetOrCreateAttribute(element, step.AttributeName);
 
             var type = step.DataType;
 
             if (attr.ValueType.HasValue && attr.ValueType.IsEqualTo(type).IsFalse())
-                throw new InvalidOperationException(
-                    $"Attribute '{attr.Name}' type conflict on '{element.Path}'");
+                XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.AttributeConflictWithPath.FormatWith(attr.Name, element.Path));
 
             attr.ValueType = type;
         }
@@ -301,7 +291,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         {
             var type = step.DataType;
 
-            if (!element.ValueType.HasValue)
+            if (element.ValueType.HasValue.IsFalse())
             {
                 element.ValueType = type;
                 return;
@@ -319,9 +309,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the element RegEx.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XApplyInvalidOperationException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
@@ -330,8 +318,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
             element.LengthValueType ??= XmlValidationDataTypeKind.String;
 
             if (element.LengthValueType.IsEqualTo(XmlValidationDataTypeKind.String).IsFalse())
-                throw new InvalidOperationException(
-                    $"Regex applied to non-string element '{element.Path}'");
+                XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.ElementRegexApplyToNotString.FormatWith(element.Path));
 
             element.Constraints.Pattern = XsdRegexTranslatorHelper.Translate(step.Pattern).XsdPattern;
         }
@@ -340,9 +327,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the element range.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XApplyInvalidOperationException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
@@ -351,10 +336,9 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
             element.LengthValueType ??= XmlValidationDataTypeKind.Integer;
 
             if (element.LengthValueType.IsEqualTo(XmlValidationDataTypeKind.Integer).IsFalse())
-                throw new InvalidOperationException(
-                    $"Integer range applied to non-integer element '{element.Path}'");
+                XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.ElementRangeApplyToNotInteger.FormatWith(element.Path));
 
-            if (step.Min.HasValue)
+            if (step.Min.HasValue.IsTrue())
             {
                 if (step.IsInclusiveValidation.IsTrue())
                     element.Constraints.MinInclusive = step.Min;
@@ -362,7 +346,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     element.Constraints.MinExclusive = step.Min;
             }
 
-            if (step.Max.HasValue)
+            if (step.Max.HasValue.IsTrue())
             {
                 if (step.IsInclusiveValidation.IsTrue())
                     element.Constraints.MaxInclusive = step.Max;
@@ -375,9 +359,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the element length.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XApplyInvalidOperationException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
@@ -386,8 +368,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
             element.LengthValueType ??= XmlValidationDataTypeKind.String;
 
             if (element.LengthValueType.IsEqualTo(XmlValidationDataTypeKind.String).IsFalse())
-                throw new InvalidOperationException(
-                    $"Length constraint applied to non-string element '{element.Path}'");
+                XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.ElementLengthApplyToNotString.FormatWith(element.Path));
 
             element.Constraints.MinLength = step.Min;
             element.Constraints.MaxLength = step.Max;
@@ -397,11 +378,15 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the attribute required.
         /// </summary>
+        /// <exception cref="XMissingArgException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
         private static void ApplyAttributeRequired(XsdElementModelDefinition element, XmlStepRecorder step)
         {
+            if (step.AttributeName.IsMissing())
+                XException.Throw<XMissingArgException>(XDefaultMessages.AttributeNameMissing);
+
             var attr = GetOrCreateAttribute(element, step.AttributeName);
             attr.IsRequired = true;
         }
@@ -410,21 +395,21 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the attribute RegEx.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XMissingArgException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
         private static void ApplyAttributeRegex(XsdElementModelDefinition element, XmlStepRecorder step)
         {
+            if (step.AttributeName.IsMissing())
+                XException.Throw<XMissingArgException>(XDefaultMessages.AttributeNameMissing);
+
             var attr = GetOrCreateAttribute(element, step.AttributeName);
 
             attr.ValueType ??= XmlValidationDataTypeKind.String;
 
             if (attr.ValueType.IsEqualTo(XmlValidationDataTypeKind.String).IsFalse())
-                throw new InvalidOperationException(
-                    $"Regex applied to non-string attribute '{attr.Name}'");
+                XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.AttributeRegexApplyToNotString.FormatWith(attr.Name));
 
             attr.Constraints.Pattern = XsdRegexTranslatorHelper.Translate(step.Pattern).XsdPattern;
         }
@@ -433,23 +418,24 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the attribute range.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XMissingArgException" />
+        /// <exception cref="XApplyInvalidOperationException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
         private static void ApplyAttributeRange(XsdElementModelDefinition element, XmlStepRecorder step)
         {
+            if (step.AttributeName.IsMissing())
+                XException.Throw<XMissingArgException>(XDefaultMessages.AttributeNameMissing);
+
             var attr = GetOrCreateAttribute(element, step.AttributeName);
 
             attr.ValueType ??= XmlValidationDataTypeKind.Integer;
 
             if (attr.ValueType.IsEqualTo(XmlValidationDataTypeKind.Integer).IsFalse())
-                throw new InvalidOperationException(
-                    $"Integer range applied to non-integer attribute '{attr.Name}'");
+                XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.AttributeRangeApplyToNotInteger.FormatWith(attr.Name));
 
-            if (step.Min.HasValue)
+            if (step.Min.HasValue.IsTrue())
             {
                 if (step.IsInclusiveValidation.IsTrue())
                     attr.Constraints.MinInclusive = step.Min;
@@ -457,7 +443,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     attr.Constraints.MinExclusive = step.Min;
             }
 
-            if (step.Max.HasValue)
+            if (step.Max.HasValue.IsTrue())
             {
                 if (step.IsInclusiveValidation.IsTrue())
                     attr.Constraints.MaxInclusive = step.Max;
@@ -470,21 +456,22 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         /// <summary>
         ///     Applies the attribute length.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XMissingArgException" />
+        /// <exception cref="XApplyInvalidOperationException" />
         /// <param name="element">The element definition.</param>
         /// <param name="step">The xml recorded step.</param>
         /// =================================================================================================
         private static void ApplyAttributeLength(XsdElementModelDefinition element, XmlStepRecorder step)
         {
+            if (step.AttributeName.IsMissing())
+                XException.Throw<XMissingArgException>(XDefaultMessages.AttributeNameMissing);
+
             var attr = GetOrCreateAttribute(element, step.AttributeName);
 
             attr.ValueType ??= XmlValidationDataTypeKind.String;
 
             if (attr.ValueType.IsEqualTo(XmlValidationDataTypeKind.String).IsFalse())
-                throw new InvalidOperationException(
-                    $"Length constraint applied to non-string attribute '{attr.Name}'");
+                XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.AttributeLengthApplyToNotString.FormatWith(attr.Name));
 
             attr.Constraints.MinLength = step.Min;
             attr.Constraints.MaxLength = step.Max;
@@ -504,7 +491,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
             XsdElementModelDefinition element,
             string name)
         {
-            if (!element.Attributes.TryGetValue(name, out var attr))
+            if (element.Attributes.TryGetValue(name, out var attr).IsFalse())
             {
                 attr = new XsdAttributeModelDefinition { Name = name };
                 element.Attributes.Add(name, attr);

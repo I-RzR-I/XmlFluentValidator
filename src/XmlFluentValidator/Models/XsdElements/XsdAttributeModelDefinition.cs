@@ -18,6 +18,8 @@
 
 using XmlFluentValidator.Enums;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+
 #endregion
 
 namespace XmlFluentValidator.Models.XsdElements

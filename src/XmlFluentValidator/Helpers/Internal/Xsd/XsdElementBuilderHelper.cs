@@ -20,8 +20,7 @@ using System;
 using System.Collections.Generic;
 using DomainCommonExtensions.ArraysExtensions;
 using DomainCommonExtensions.DataTypeExtensions;
-using DomainCommonExtensions.Resources.Enums;
-using DomainCommonExtensions.Utilities.Ensure;
+using XmlFluentValidator.Exceptions;
 using XmlFluentValidator.Models.XsdElements;
 
 // ReSharper disable UseCollectionExpression
@@ -63,7 +62,7 @@ internal class XsdElementBuilderHelper
     /// <summary>
     ///     Gets or create.
     /// </summary>
-    /// <exception cref="ArgumentException">
+    /// <exception cref="XInvalidPathException">
     ///     Thrown when one or more arguments have unsupported or illegal values.
     /// </exception>
     /// <param name="path">The Element/attribute path.</param>
@@ -78,7 +77,7 @@ internal class XsdElementBuilderHelper
 
         var parts = path.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length.IsZero())
-            DomainEnsure.ThrowException($"Invalid path ({nameof(path)})", ExceptionType.ArgumentException);
+            XException.Throw<XInvalidPathException>(XDefaultMessages.InvalidPath.FormatWith(path));
 
         XsdElementModelDefinition parent = null;
         var built = new List<string>();
@@ -118,6 +117,6 @@ internal class XsdElementBuilderHelper
     ///     The root.
     /// </returns>
     /// =================================================================================================
-    public XsdElementModelDefinition GetRoot(string rootName) 
+    public XsdElementModelDefinition GetRoot(string rootName)
         => _byPath[rootName];
 }

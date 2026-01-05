@@ -34,12 +34,10 @@ namespace XmlFluentValidator.Helpers.Internal
             new("ELEMENT_REQUIRED", $"Element '{{{MessageArgs.Element}}}' is required at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor ValueMustMatchPattern =
-            new("VALUE_PATTERN",
-                $"Value '{{{MessageArgs.Actual}}}' must match pattern '{{{MessageArgs.Pattern}}}' at '{{{MessageArgs.Path}}}'");
+            new("VALUE_PATTERN", $"Value '{{{MessageArgs.Actual}}}' must match pattern '{{{MessageArgs.Pattern}}}' at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor AttributeValueMustMatchPattern =
-            new("VALUE_PATTERN",
-                $"Attribute '{{{MessageArgs.Name}}}' value '{{{MessageArgs.Value}}}' does not match regex '{{{MessageArgs.Pattern}}}'.");
+            new("VALUE_PATTERN", $"Attribute '{{{MessageArgs.Name}}}' value '{{{MessageArgs.Value}}}' does not match regex '{{{MessageArgs.Pattern}}}'.");
 
         public static readonly MessageDescriptor ValueMustMatchPatternFailed =
             new("VALUE_PATTERN_FAILED", "Value must match pattern failed.");

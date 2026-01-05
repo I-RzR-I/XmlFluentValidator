@@ -27,7 +27,9 @@ using DomainCommonExtensions.CommonExtensions.TypeParam;
 using DomainCommonExtensions.DataTypeExtensions;
 using DomainCommonExtensions.Utilities.Ensure;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Exceptions;
 using XmlFluentValidator.Extensions;
+using XmlFluentValidator.Helpers.Internal;
 using XmlFluentValidator.Helpers.Internal.Xsd;
 using XmlFluentValidator.Models;
 using XmlFluentValidator.Models.XsdElements;
@@ -196,9 +198,7 @@ namespace XmlFluentValidator
         /// <summary>
         ///     Emit complex type.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XEmitInvalidOperationException" />
         /// <param name="elementDefinition">The element definition.</param>
         /// <returns>
         ///     An XmlSchemaComplexType.
@@ -215,17 +215,14 @@ namespace XmlFluentValidator
             // Enforce invalid combinations
             // -------------------------------
             if (hasChildren.IsTrue() && hasValue.IsTrue())
-                throw new InvalidOperationException(
-                    $"Element '{elementDefinition.Name}' cannot have both value and child elements.");
+                XException.Throw<XEmitInvalidOperationException>(XDefaultMessages.EmitElementConflictHaveValueAndChildElement.FormatWith(elementDefinition.Name));
 
             if (hasChildren.IsTrue() && hasFacets.IsTrue())
-                throw new InvalidOperationException(
-                    $"Element '{elementDefinition.Name}' cannot have facets when child elements exist.");
+                XException.Throw<XEmitInvalidOperationException>(XDefaultMessages.EmitElementConflictHaveFacetAndChildExist.FormatWith(elementDefinition.Name));
 
             // -------------------------------
             // Complex with children
             // -------------------------------
-
             if (hasChildren.IsTrue())
             {
                 var complexType = new XmlSchemaComplexType();
@@ -245,7 +242,6 @@ namespace XmlFluentValidator
             // -------------------------------
             // Value + attributes
             // -------------------------------
-
             if (hasValue.IsTrue() && hasAttributes.IsTrue())
             {
                 var simpleContent = new XmlSchemaSimpleContent();
@@ -288,7 +284,6 @@ namespace XmlFluentValidator
             // -------------------------------
             // Attributes only (no value, no children)
             // -------------------------------
-
             if (hasAttributes.IsTrue())
             {
                 var complexType = new XmlSchemaComplexType();
@@ -302,8 +297,7 @@ namespace XmlFluentValidator
             // -------------------------------
             // Should never reach here
             // -------------------------------
-            throw new InvalidOperationException(
-                $"Invalid complex type state for element '{elementDefinition.Name}'.");
+            throw new XEmitInvalidOperationException(XDefaultMessages.EmitInvalidComplexType.FormatWith(elementDefinition.Name));
         }
 
         /// -------------------------------------------------------------------------------------------------

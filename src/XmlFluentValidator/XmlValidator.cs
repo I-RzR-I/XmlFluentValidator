@@ -29,6 +29,8 @@ using XmlFluentValidator.Enums;
 using XmlFluentValidator.Models.Result;
 using XmlFluentValidator.Rules;
 
+// ReSharper disable UnusedParameter.Local
+
 #endregion
 
 namespace XmlFluentValidator

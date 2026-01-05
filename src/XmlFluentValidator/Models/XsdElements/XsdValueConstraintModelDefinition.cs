@@ -1,7 +1,7 @@
 ﻿// ***********************************************************************
 //  Assembly         : RzR.Shared.Entity.XmlFluentValidator
 //  Author           : RzR
-//  Created On       : 2025-12-26 12:12
+//  Created On       : 2025-12-29 23:12
 // 
 //  Last Modified By : RzR
 //  Last Modified On : 2025-12-26 15:39
@@ -14,7 +14,11 @@
 //  </summary>
 // ***********************************************************************
 
+#region U S A G E S
+
 using System.Collections.Generic;
+
+#endregion
 
 namespace XmlFluentValidator.Models.XsdElements
 {

@@ -18,6 +18,8 @@
 
 using XmlFluentValidator.Enums;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 #endregion
 
 namespace XmlFluentValidator.Models.Result
