@@ -1,3 +1,9 @@
+### v**1.0.0-alpha.4** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 06-01-2025
+-> [DEV] - Add possibilities to set inclusive/exclusive length validation (`WithElementInRange`, `WithAttributeInRange`);<br />
+-> [DEV] - Add new validation rule for exact value length (`WithElementExactLength`, `WithAttributeExactLength`);<br />
+-> [DEV] - Add validation for range values (`WithElementEnumerator`, `WithAttributeEnumerator`);<br />
+-> [DEV] - Add element/attribute documentation(annotation) (`WithElementDocumentation`, `WithAttributeDocumentation`);<br />
+
 ### v**1.0.0-alpha.3** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 29-12-2025
 -> [DEV] - Add XSD generator (`XsdGenerator`) based on defined XML validation rules;<br />
 -> [DEV] - Add XSD to string export;<br />
