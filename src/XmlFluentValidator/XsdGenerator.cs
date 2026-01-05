@@ -27,7 +27,9 @@ using DomainCommonExtensions.CommonExtensions.TypeParam;
 using DomainCommonExtensions.DataTypeExtensions;
 using DomainCommonExtensions.Utilities.Ensure;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Exceptions;
 using XmlFluentValidator.Extensions;
+using XmlFluentValidator.Helpers.Internal;
 using XmlFluentValidator.Helpers.Internal.Xsd;
 using XmlFluentValidator.Models;
 using XmlFluentValidator.Models.XsdElements;
@@ -149,6 +151,10 @@ namespace XmlFluentValidator
                 Name = elementDefinition.Name
             };
 
+            var annotation = BuildAnnotation(elementDefinition.Documentation);
+            if (annotation.IsNotNull())
+                schemaElement.Annotation = annotation;
+
             if (isRoot.IsFalse())
             {
                 schemaElement.MinOccurs = elementDefinition.MinOccurs ?? 1;
@@ -163,6 +169,49 @@ namespace XmlFluentValidator
                 schemaElement.SchemaType = EmitSimpleType(elementDefinition);
 
             return schemaElement;
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Emit XML schema attribute.
+        /// </summary>
+        /// <param name="attributeDefinition">The attribute definition.</param>
+        /// <returns>
+        ///     An XmlSchemaAttribute.
+        /// </returns>
+        /// =================================================================================================
+        private XmlSchemaAttribute EmitAttribute(XsdAttributeModelDefinition attributeDefinition)
+        {
+            var typeOfValue = attributeDefinition.ValueType.IfIsNull(XmlValidationDataTypeKind.String);
+
+            DomainEnsure.IsNotNull(attributeDefinition, nameof(attributeDefinition));
+
+            var xmlAttribute = new XmlSchemaAttribute
+            {
+                Name = attributeDefinition.Name,
+                Use = attributeDefinition.IsRequired.IsTrue()
+                    ? XmlSchemaUse.Required
+                    : XmlSchemaUse.Optional
+            };
+
+            var annotation = BuildAnnotation(attributeDefinition.Documentation);
+            if (annotation.IsNotNull())
+                xmlAttribute.Annotation = annotation;
+
+            // Attributes must always be simple types
+            var restriction = new XmlSchemaSimpleTypeRestriction
+            {
+                BaseTypeName = BuildBaseTypeName(typeOfValue)
+            };
+
+            EmitFacets(restriction.Facets, attributeDefinition.Constraints);
+
+            xmlAttribute.SchemaType = new XmlSchemaSimpleType
+            {
+                Content = restriction
+            };
+
+            return xmlAttribute;
         }
 
         /// -------------------------------------------------------------------------------------------------
@@ -196,9 +245,7 @@ namespace XmlFluentValidator
         /// <summary>
         ///     Emit complex type.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the requested operation is invalid.
-        /// </exception>
+        /// <exception cref="XEmitInvalidOperationException" />
         /// <param name="elementDefinition">The element definition.</param>
         /// <returns>
         ///     An XmlSchemaComplexType.
@@ -215,17 +262,14 @@ namespace XmlFluentValidator
             // Enforce invalid combinations
             // -------------------------------
             if (hasChildren.IsTrue() && hasValue.IsTrue())
-                throw new InvalidOperationException(
-                    $"Element '{elementDefinition.Name}' cannot have both value and child elements.");
+                XException.Throw<XEmitInvalidOperationException>(XDefaultMessages.EmitElementConflictHaveValueAndChildElement.FormatWith(elementDefinition.Name));
 
             if (hasChildren.IsTrue() && hasFacets.IsTrue())
-                throw new InvalidOperationException(
-                    $"Element '{elementDefinition.Name}' cannot have facets when child elements exist.");
+                XException.Throw<XEmitInvalidOperationException>(XDefaultMessages.EmitElementConflictHaveFacetAndChildExist.FormatWith(elementDefinition.Name));
 
             // -------------------------------
             // Complex with children
             // -------------------------------
-
             if (hasChildren.IsTrue())
             {
                 var complexType = new XmlSchemaComplexType();
@@ -245,7 +289,6 @@ namespace XmlFluentValidator
             // -------------------------------
             // Value + attributes
             // -------------------------------
-
             if (hasValue.IsTrue() && hasAttributes.IsTrue())
             {
                 var simpleContent = new XmlSchemaSimpleContent();
@@ -288,7 +331,6 @@ namespace XmlFluentValidator
             // -------------------------------
             // Attributes only (no value, no children)
             // -------------------------------
-
             if (hasAttributes.IsTrue())
             {
                 var complexType = new XmlSchemaComplexType();
@@ -302,8 +344,7 @@ namespace XmlFluentValidator
             // -------------------------------
             // Should never reach here
             // -------------------------------
-            throw new InvalidOperationException(
-                $"Invalid complex type state for element '{elementDefinition.Name}'.");
+            throw new XEmitInvalidOperationException(XDefaultMessages.EmitInvalidComplexType.FormatWith(elementDefinition.Name));
         }
 
         /// -------------------------------------------------------------------------------------------------
@@ -317,85 +358,52 @@ namespace XmlFluentValidator
             XsdValueConstraintModelDefinition constraint)
         {
             if (constraint.Pattern.IsPresent())
-                facets.Add(new XmlSchemaPatternFacet
-                {
-                    Value = constraint.Pattern
-                });
+            {
+                facets.Add(new XmlSchemaPatternFacet() { Value = constraint.Pattern });
+            }
 
             if (constraint.MinLength.HasValue)
-                facets.Add(new XmlSchemaMinLengthFacet
-                {
-                    Value = constraint.MinLength.Value.ToString()
-                });
+            {
+                facets.Add(new XmlSchemaMinLengthFacet() { Value = constraint.MinLength.Value.ToString() });
+            }
 
             if (constraint.MaxLength.HasValue)
-                facets.Add(new XmlSchemaMaxLengthFacet
-                {
-                    Value = constraint.MaxLength.Value.ToString()
-                });
+            {
+                facets.Add(new XmlSchemaMaxLengthFacet() { Value = constraint.MaxLength.Value.ToString() });
+            }
+
+            if (constraint.ExactLength.HasValue)
+            {
+                facets.Add(new XmlSchemaLengthFacet() { Value = constraint.ExactLength.Value.ToString() });
+            }
 
             if (constraint.MinInclusive.HasValue)
-                facets.Add(new XmlSchemaMinInclusiveFacet
-                {
-                    Value = constraint.MinInclusive.Value.ToString()
-                });
+            {
+                facets.Add(new XmlSchemaMinInclusiveFacet() { Value = constraint.MinInclusive.Value.ToString() });
+            }
 
             if (constraint.MaxInclusive.HasValue)
-                facets.Add(new XmlSchemaMaxInclusiveFacet
-                {
-                    Value = constraint.MaxInclusive.Value.ToString()
-                });
+            {
+                facets.Add(new XmlSchemaMaxInclusiveFacet() { Value = constraint.MaxInclusive.Value.ToString() });
+            }
 
             if (constraint.MinExclusive.HasValue)
-                facets.Add(new XmlSchemaMinExclusiveFacet
-                {
-                    Value = constraint.MinExclusive.Value.ToString()
-                });
+            {
+                facets.Add(new XmlSchemaMinExclusiveFacet() { Value = constraint.MinExclusive.Value.ToString() });
+            }
 
             if (constraint.MaxExclusive.HasValue)
-                facets.Add(new XmlSchemaMaxExclusiveFacet
+            {
+                facets.Add(new XmlSchemaMaxExclusiveFacet() { Value = constraint.MaxExclusive.Value.ToString() });
+            }
+
+            if (constraint.EnumerationValues.IsNotNullOrEmptyEnumerable())
+            {
+                foreach (var enumValue in constraint.EnumerationValues.NotNull())
                 {
-                    Value = constraint.MaxExclusive.Value.ToString()
-                });
-        }
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Emit XML schema attribute.
-        /// </summary>
-        /// <param name="attributeDefinition">The attribute definition.</param>
-        /// <returns>
-        ///     An XmlSchemaAttribute.
-        /// </returns>
-        /// =================================================================================================
-        private XmlSchemaAttribute EmitAttribute(XsdAttributeModelDefinition attributeDefinition)
-        {
-            var typeOfValue = attributeDefinition.ValueType.IfIsNull(XmlValidationDataTypeKind.String);
-
-            DomainEnsure.IsNotNull(attributeDefinition, nameof(attributeDefinition));
-
-            var xmlAttribute = new XmlSchemaAttribute
-            {
-                Name = attributeDefinition.Name,
-                Use = attributeDefinition.IsRequired.IsTrue()
-                    ? XmlSchemaUse.Required
-                    : XmlSchemaUse.Optional
-            };
-
-            // Attributes must always be simple types
-            var restriction = new XmlSchemaSimpleTypeRestriction
-            {
-                BaseTypeName = BuildBaseTypeName(typeOfValue)
-            };
-
-            EmitFacets(restriction.Facets, attributeDefinition.Constraints);
-
-            xmlAttribute.SchemaType = new XmlSchemaSimpleType
-            {
-                Content = restriction,
-            };
-
-            return xmlAttribute;
+                    facets.Add(new XmlSchemaEnumerationFacet() { Value = enumValue });
+                }
+            }
         }
 
         /// -------------------------------------------------------------------------------------------------
@@ -446,6 +454,31 @@ namespace XmlFluentValidator
             var type = new XmlQualifiedName(xsdType, XsNs);
 
             return type;
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Builds an annotation.
+        /// </summary>
+        /// <param name="documentation">The documentation.</param>
+        /// <returns>
+        ///     An XmlSchemaAnnotation.
+        /// </returns>
+        /// =================================================================================================
+        private static XmlSchemaAnnotation BuildAnnotation(string documentation)
+        {
+            if (documentation.IsMissing())
+                return null;
+
+            var doc = new XmlSchemaDocumentation
+            {
+                Markup = [new XmlDocument().CreateTextNode(documentation)]
+            };
+
+            return new XmlSchemaAnnotation
+            {
+                Items = { doc }
+            };
         }
     }
 }

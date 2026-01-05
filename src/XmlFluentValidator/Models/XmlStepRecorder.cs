@@ -16,6 +16,7 @@
 
 #region U S A G E S
 
+using System.Collections.Generic;
 using XmlFluentValidator.Enums;
 using XmlFluentValidator.Models.Message;
 
@@ -83,6 +84,16 @@ namespace XmlFluentValidator.Models
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
+        ///     Gets or sets the value exact length.
+        /// </summary>
+        /// <value>
+        ///     The length of the value exact.
+        /// </value>
+        /// =================================================================================================
+        public int? ValueExactLength { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
         ///     Gets or sets the maximum occurs.
         /// </summary>
         /// <value>
@@ -130,5 +141,25 @@ namespace XmlFluentValidator.Models
         /// </value>
         /// =================================================================================================
         public bool IsInclusiveValidation { get; set; } = true;
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Gets or sets the in range enumerator.
+        /// </summary>
+        /// <value>
+        ///     The in range enumerator.
+        /// </value>
+        /// =================================================================================================
+        public IEnumerable<string> InRangeEnumerator { get; set; } = new List<string>();
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Gets or sets information of the annotation documentation.
+        /// </summary>
+        /// <value>
+        ///     Information of the annotation documentation.
+        /// </value>
+        /// =================================================================================================
+        public string AnnotationDocumentation { get; set; }
     }
 }

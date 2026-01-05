@@ -6,7 +6,7 @@
 //  Last Modified By : RzR
 //  Last Modified On : 2025-12-26 23:45
 // ***********************************************************************
-//  <copyright file="UnsupportedRegexException.cs" company="RzR SOFT & TECH">
+//  <copyright file="XUnsupportedRegexException.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
 //  </copyright>
 // 
@@ -16,7 +16,7 @@
 
 #region U S A G E S
 
-using System;
+// ReSharper disable ClassNeverInstantiated.Global
 
 #endregion
 
@@ -28,17 +28,17 @@ namespace XmlFluentValidator.Exceptions
     /// </summary>
     /// <seealso cref="T:Exception"/>
     /// =================================================================================================
-    public class UnsupportedRegexException : Exception
+    public class XUnsupportedRegexException : XmlFluentValidatorException
     {
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="UnsupportedRegexException"/> class.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// =================================================================================================
-        public UnsupportedRegexException(string message) : base(message)
-        {
-        }
+        /// <inheritdoc />
+        public XUnsupportedRegexException(string message)
+            : base(message)
+        { }
+
+        /// <inheritdoc />
+        public XUnsupportedRegexException(string message, params object[] args)
+            : base(message, args)
+        { }
     }
 }
 

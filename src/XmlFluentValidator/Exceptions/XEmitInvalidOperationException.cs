@@ -1,12 +1,12 @@
 ﻿// ***********************************************************************
 //  Assembly         : RzR.Shared.Entity.XmlFluentValidator
 //  Author           : RzR
-//  Created On       : 2025-12-17 20:12
+//  Created On       : 2026-01-05 21:01
 // 
 //  Last Modified By : RzR
-//  Last Modified On : 2025-12-18 18:33
+//  Last Modified On : 2026-01-05 21:41
 // ***********************************************************************
-//  <copyright file="LocalizedMessageTemplateSource.cs" company="RzR SOFT & TECH">
+//  <copyright file="XEmitInvalidOperationException.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
 //  </copyright>
 // 
@@ -14,50 +14,43 @@
 //  </summary>
 // ***********************************************************************
 
-#region U S A G E S
-
-using System.Resources;
-using DomainCommonExtensions.DataTypeExtensions;
-using XmlFluentValidator.Abstractions.Message;
-
-#endregion
-
-namespace XmlFluentValidator.Helpers
+namespace XmlFluentValidator.Exceptions
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
-    ///     A localized message template source.
+    ///     Exception for signalling emit invalid operation errors.
     /// </summary>
-    /// <seealso cref="T:XmlFluentValidator.Abstractions.Message.ILocalizedMessageTemplateSource"/>
+    /// <seealso cref="T:XmlFluentValidator.Exceptions.XmlFluentValidatorException"/>
     /// =================================================================================================
-    public class LocalizedMessageTemplateSource : ILocalizedMessageTemplateSource
+    public class XEmitInvalidOperationException : XmlFluentValidatorException
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     (Immutable) the manager.
+        ///     Initializes a new instance of the <see cref="XEmitInvalidOperationException"/> class.
         /// </summary>
         /// =================================================================================================
-        private readonly ResourceManager _manager;
+        public XEmitInvalidOperationException()
+        { }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Initializes a new instance of the <see cref="LocalizedMessageTemplateSource"/> class.
+        ///     Initializes a new instance of the <see cref="XEmitInvalidOperationException"/> class.
         /// </summary>
-        /// <param name="manager">The manager.</param>
+        /// <param name="message">The message.</param>
         /// =================================================================================================
-        public LocalizedMessageTemplateSource(ResourceManager manager)
-            => _manager = manager;
+        public XEmitInvalidOperationException(string message) : base(message)
+        { }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets a string using the given code.
+        ///     Initializes a new instance of the <see cref="XEmitInvalidOperationException"/> class.
         /// </summary>
-        /// <param name="code">The code to get.</param>
-        /// <returns>
-        ///     A string.
-        /// </returns>
+        /// <param name="message">The message.</param>
+        /// <param name="args">A variable-length parameters list containing arguments.</param>
         /// =================================================================================================
-        public string Get(string code) 
-            => _manager.GetString(code).IfNullThenEmpty();
+        public XEmitInvalidOperationException(string message, params object[] args) : base(message, args)
+        { }
+
     }
 }
+

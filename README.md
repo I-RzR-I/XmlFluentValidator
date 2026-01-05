@@ -9,9 +9,8 @@ This library allows you to:
 - Define XML validation rules with a fluent builder syntax.
 - Validate XML documents at runtime.
 - Generate XSD schemas that reflect those rules.
-
-TODO:
 - Document runtime-only rules (like custom logic) in <xs:annotation> blocks.
+
 
 ---
 

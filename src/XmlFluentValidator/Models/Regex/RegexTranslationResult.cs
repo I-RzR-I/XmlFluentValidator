@@ -18,6 +18,9 @@
 
 using System.Collections.Generic;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+
 #endregion
 
 namespace XmlFluentValidator.Models.Regex

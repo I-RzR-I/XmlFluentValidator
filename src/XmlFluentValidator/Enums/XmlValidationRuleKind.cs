@@ -62,7 +62,22 @@ namespace XmlFluentValidator.Enums
         /// <summary>
         ///     An enum constant representing the element data type option.
         /// </summary>
-        ElementDataType,
+        ElementDataType, 
+        
+        /// <summary>
+        ///     An enum constant representing the element enumeration option.
+        /// </summary>
+        ElementEnumeration,
+        
+        /// <summary>
+        ///     An enum constant representing the element value exact length option.
+        /// </summary>
+        ElementValueExactLength,
+
+        /// <summary>
+        ///     An enum constant representing the element documentation option.
+        /// </summary>
+        ElementDocumentation,
 
         /* Attribute rules */
         /// <summary>
@@ -95,14 +110,28 @@ namespace XmlFluentValidator.Enums
         /// </summary>
         AttributeDataType,
 
+        /// <summary>
+        ///     An enum constant representing the attribute enumeration option.
+        /// </summary>
+        AttributeEnumeration,
+
+        /// <summary>
+        ///     An enum constant representing the attribute value exact length option.
+        /// </summary>
+        AttributeValueExactLength,
+
+        /// <summary>
+        ///     An enum constant representing the attribute documentation option.
+        /// </summary>
+        AttributeDocumentation,
+
         /* Runtime-only */
         /// <summary>
         ///     An enum constant representing the custom element option.
         /// </summary>
         CustomElement,
 
-        /// <summary>
-        /// 
+        /// <summary> 
         ///     An enum constant representing the element attribute cross option.
         /// </summary>
         ElementAttributeCross,

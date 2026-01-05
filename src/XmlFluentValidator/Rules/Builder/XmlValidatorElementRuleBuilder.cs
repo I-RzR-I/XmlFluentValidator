@@ -27,6 +27,7 @@ using System.Text.RegularExpressions;
 using System.Xml.XPath;
 using XmlFluentValidator.Abstractions;
 using XmlFluentValidator.Enums;
+using XmlFluentValidator.Extensions;
 using XmlFluentValidator.Helpers.Internal;
 using XmlFluentValidator.Models;
 using XmlFluentValidator.Models.Message;
@@ -227,6 +228,7 @@ namespace XmlFluentValidator.Rules
         public IXmlValidatorRuleBuilder WithElementInRange(
             int min, 
             int max, 
+            bool isInclusive = true,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -236,7 +238,8 @@ namespace XmlFluentValidator.Rules
                 Min = min,
                 Max = max,
                 Descriptor = DefaultMessageDescriptors.ElementAttributeInRangeFailed,
-                Path = _xpath
+                Path = _xpath,
+                IsInclusiveValidation = isInclusive
             });
 
             _steps.Add(doc =>
@@ -247,7 +250,7 @@ namespace XmlFluentValidator.Rules
                 {
                     if (int.TryParse(e.Value, out var n))
                     {
-                        if (n < min || n > max)
+                        if (n.IsInRange(min, max, isInclusive).IsFalse())
                         {
                             var path = GetElementPath(e);
                             var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementInRangeWithValue,
@@ -430,6 +433,102 @@ namespace XmlFluentValidator.Rules
                 }
 
                 return fails;
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithElementEnumerator(
+            string[] rangeEnumerator, 
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.ElementEnumeration,
+                Descriptor = DefaultMessageDescriptors.ElementInEnumValidationFailed,
+                Path = _xpath,
+                InRangeEnumerator = rangeEnumerator,
+                AnnotationDocumentation = $"ENUM: {rangeEnumerator.NotNull().ListToString(",")}"
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    var value = element?.Value.IfNullThenEmpty();
+                    var isInRange = rangeEnumerator.IsInRangeStringValue(value);
+                    if (isInRange.IsFalse())
+                    {
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementInEnumWithValueValidationFailed,
+                            MessageArguments.From(
+                                (MessageArgs.Value, value)), 
+                            _xpath);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithElementExactLength(
+            int length, 
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.ElementValueExactLength,
+                Descriptor = DefaultMessageDescriptors.ElementExactLengthValidationFailed,
+                Path = _xpath,
+                ValueExactLength = length
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    var value = element?.Value.IfNullThenEmpty();
+                    var isValid = value!.Length == length;
+                    if (isValid.IsFalse())
+                    {
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementExactLengthWithValueValidationFailed,
+                            MessageArguments.From(
+                                (MessageArgs.Value, value),
+                                (MessageArgs.CurrentLength, value.Length),
+                                (MessageArgs.Length, length)
+                                ), _xpath);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithElementDocumentation(
+            string documentation)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.ElementDocumentation,
+                Path = _xpath,
+                AnnotationDocumentation = documentation
             });
 
             return this;
