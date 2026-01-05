@@ -57,6 +57,16 @@ namespace XmlFluentValidator.Models.XsdElements
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
+        ///     Gets or sets the exact length.
+        /// </summary>
+        /// <value>
+        ///     The exact length.
+        /// </value>
+        /// =================================================================================================
+        public int? ExactLength { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
         ///     Gets or sets the minimum inclusive value.
         /// </summary>
         /// <value>

@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using DomainCommonExtensions.ArraysExtensions;
+using DomainCommonExtensions.CommonExtensions;
 using DomainCommonExtensions.DataTypeExtensions;
 using XmlFluentValidator.Enums;
 using XmlFluentValidator.Extensions;
@@ -132,6 +133,10 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     ApplyElementEnumeration(element, step);
                     break;
 
+                case XmlValidationRuleKind.ElementValueExactLength:
+                    ApplyElementExactLength(element, step);
+                    break;
+
                 case XmlValidationRuleKind.AttributeRequired:
                     ApplyAttributeRequired(element, step);
                     break;
@@ -156,6 +161,10 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     ApplyAttributeEnumeration(element, step);
                     break;
 
+                case XmlValidationRuleKind.AttributeValueExactLength:
+                    ApplyAttributeExactLength(element, step);
+                    break;
+
                 case XmlValidationRuleKind.CustomElement:
                 case XmlValidationRuleKind.Condition:
                 case XmlValidationRuleKind.ElementAttributeCross:
@@ -167,6 +176,55 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Applies the element exact length.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown when the requested operation is invalid.
+        /// </exception>
+        /// <param name="element">The element definition.</param>
+        /// <param name="step">The xml recorded step.</param>
+        /// =================================================================================================
+        private void ApplyElementExactLength(XsdElementModelDefinition element, XmlStepRecorder step)
+        {
+            element.LengthValueType ??= XmlValidationDataTypeKind.String;
+
+            if (element.LengthValueType.IsEqualTo(XmlValidationDataTypeKind.String).IsFalse())
+                throw new InvalidOperationException($"Length applied to non-string element '{element.Path}'");
+
+            if (step.ValueExactLength.IsNotNull())
+                element.Constraints.ExactLength = step.ValueExactLength;
+
+            if (step.AnnotationDescription.IsPresent())
+                element.Documentation = step.AnnotationDescription;
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Applies the attribute exact length.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown when the requested operation is invalid.
+        /// </exception>
+        /// <param name="element">The element definition.</param>
+        /// <param name="step">The xml recorded step.</param>
+        /// =================================================================================================
+        private void ApplyAttributeExactLength(XsdElementModelDefinition element, XmlStepRecorder step)
+        {
+            if (string.IsNullOrWhiteSpace(step.AttributeName))
+                throw new InvalidOperationException("Attribute name required");
+
+            var attr = GetOrCreateAttribute(element, step.AttributeName);
+            attr.ValueType ??= XmlValidationDataTypeKind.String;
+
+            if (attr.ValueType.IsEqualTo(XmlValidationDataTypeKind.String).IsFalse())
+                throw new InvalidOperationException($"Length applied to non-string attribute '{attr.Name}'");
+
+            if (step.ValueExactLength.IsNotNull())
+                attr.Constraints.ExactLength = step.ValueExactLength;
         }
 
         /// -------------------------------------------------------------------------------------------------

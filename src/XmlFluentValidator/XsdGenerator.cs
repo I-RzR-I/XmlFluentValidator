@@ -318,68 +318,49 @@ namespace XmlFluentValidator
         {
             if (constraint.Pattern.IsPresent())
             {
-                facets.Add(new XmlSchemaPatternFacet
-                {
-                    Value = constraint.Pattern
-                });
+                facets.Add(new XmlSchemaPatternFacet() { Value = constraint.Pattern });
             }
 
             if (constraint.MinLength.HasValue)
             {
-                facets.Add(new XmlSchemaMinLengthFacet
-                {
-                    Value = constraint.MinLength.Value.ToString()
-                });
+                facets.Add(new XmlSchemaMinLengthFacet() { Value = constraint.MinLength.Value.ToString() });
             }
 
             if (constraint.MaxLength.HasValue)
             {
-                facets.Add(new XmlSchemaMaxLengthFacet
-                {
-                    Value = constraint.MaxLength.Value.ToString()
-                });
+                facets.Add(new XmlSchemaMaxLengthFacet() { Value = constraint.MaxLength.Value.ToString() });
+            }
+
+            if (constraint.ExactLength.HasValue)
+            {
+                facets.Add(new XmlSchemaLengthFacet() { Value = constraint.ExactLength.Value.ToString() });
             }
 
             if (constraint.MinInclusive.HasValue)
             {
-                facets.Add(new XmlSchemaMinInclusiveFacet
-                {
-                    Value = constraint.MinInclusive.Value.ToString()
-                });
+                facets.Add(new XmlSchemaMinInclusiveFacet() { Value = constraint.MinInclusive.Value.ToString() });
             }
 
             if (constraint.MaxInclusive.HasValue)
             {
-                facets.Add(new XmlSchemaMaxInclusiveFacet
-                {
-                    Value = constraint.MaxInclusive.Value.ToString()
-                });
+                facets.Add(new XmlSchemaMaxInclusiveFacet() { Value = constraint.MaxInclusive.Value.ToString() });
             }
 
             if (constraint.MinExclusive.HasValue)
             {
-                facets.Add(new XmlSchemaMinExclusiveFacet
-                {
-                    Value = constraint.MinExclusive.Value.ToString()
-                });
+                facets.Add(new XmlSchemaMinExclusiveFacet() { Value = constraint.MinExclusive.Value.ToString() });
             }
 
             if (constraint.MaxExclusive.HasValue)
             {
-                facets.Add(new XmlSchemaMaxExclusiveFacet
-                {
-                    Value = constraint.MaxExclusive.Value.ToString()
-                });
+                facets.Add(new XmlSchemaMaxExclusiveFacet() { Value = constraint.MaxExclusive.Value.ToString() });
             }
 
             if (constraint.EnumerationValues.IsNotNullOrEmptyEnumerable())
             {
                 foreach (var enumValue in constraint.EnumerationValues.NotNull())
                 {
-                    facets.Add(new XmlSchemaEnumerationFacet()
-                    {
-                        Value = enumValue
-                    });
+                    facets.Add(new XmlSchemaEnumerationFacet() { Value = enumValue });
                 }
             }
         }

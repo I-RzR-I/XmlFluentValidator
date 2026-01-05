@@ -32,5 +32,7 @@ namespace XmlFluentValidator.Helpers.Internal
         public const string Duplicates = "Duplicates";
         public const string RuleName = "RuleName";
         public const string DataType = "DataType";
+        public const string Length = "Length";
+        public const string CurrentLength = "CurrentLength";
     }
 }

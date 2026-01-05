@@ -84,6 +84,16 @@ namespace XmlFluentValidator.Models
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
+        ///     Gets or sets the value exact length.
+        /// </summary>
+        /// <value>
+        ///     The length of the value exact.
+        /// </value>
+        /// =================================================================================================
+        public int? ValueExactLength { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
         ///     Gets or sets the maximum occurs.
         /// </summary>
         /// <value>

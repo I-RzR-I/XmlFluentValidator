@@ -68,6 +68,8 @@ namespace XmlFluentValidator.Enums
         ///     An enum constant representing the element enumeration option.
         /// </summary>
         ElementEnumeration,
+        
+        ElementValueExactLength,
 
         /* Attribute rules */
         /// <summary>
@@ -104,6 +106,8 @@ namespace XmlFluentValidator.Enums
         ///     An enum constant representing the attribute enumeration option.
         /// </summary>
         AttributeEnumeration,
+
+        AttributeValueExactLength,
 
         /* Runtime-only */
         /// <summary>

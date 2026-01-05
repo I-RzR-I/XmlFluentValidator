@@ -103,6 +103,7 @@ namespace XmlValidatorTests.Tests
                 .Done()
                 .ForPath("Order/Customer/Address/State")
                     .WithElementRequired()
+                    .WithElementExactLength(2)
                 .Done()
                 .ForPath("Order/Customer/Address/PostalCode")
                     .WithElementRequired()

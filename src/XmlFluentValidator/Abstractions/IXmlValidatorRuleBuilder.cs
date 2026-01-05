@@ -186,6 +186,20 @@ namespace XmlFluentValidator.Abstractions
             string[] rangeEnumerator,
             string message = null);
 
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With element exact length.
+        /// </summary>
+        /// <param name="length">The length.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementExactLength(
+            int length,
+            string message = null);
+
         #endregion
 
         #region ATTRIBUTE
@@ -317,6 +331,22 @@ namespace XmlFluentValidator.Abstractions
         IXmlValidatorRuleBuilder WithAttributeEnumerator(
             string name,
             string[] rangeEnumerator,
+            string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With attribute exact length.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="length">The length.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeExactLength(
+            string name,
+            int length,
             string message = null);
 
         #endregion

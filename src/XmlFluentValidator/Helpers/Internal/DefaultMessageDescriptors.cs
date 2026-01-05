@@ -180,12 +180,24 @@ namespace XmlFluentValidator.Helpers.Internal
             new("ELEMENT_IN_ENUM_FAILED", "The element value is out of allowed range.");
 
         public static readonly MessageDescriptor ElementInEnumWithValueValidationFailed =
-            new("ELEMENT_IN_ENUM_WITH_DATA_FAILED", $"The element value {{{{{MessageArgs.Value}}}}} is out of allowed range.");
+            new("ELEMENT_IN_ENUM_WITH_DATA_FAILED", $"The element value {{{MessageArgs.Value}}} is out of allowed range.");
 
         public static readonly MessageDescriptor AttributeInEnumValidationFailed =
             new("ATTRIBUTE_IN_ENUM_FAILED", "The attribute value is out of allowed range.");
 
         public static readonly MessageDescriptor AttributeInEnumWithValueValidationFailed =
-            new("ATTRIBUTE_IN_ENUM_WITH_DATA_FAILED", $"The attribute ({{{MessageArgs.Attribute}}}) value {{{{{MessageArgs.Value}}}}} is out of allowed range.");
+            new("ATTRIBUTE_IN_ENUM_WITH_DATA_FAILED", $"The attribute ({{{MessageArgs.Attribute}}}) value {{{MessageArgs.Value}}} is out of allowed range.");
+
+        public static readonly MessageDescriptor ElementExactLengthValidationFailed =
+            new("ELEMENT_EXACT_LENGTH_FAILED", "The element value length validation failed.");
+
+        public static readonly MessageDescriptor ElementExactLengthWithValueValidationFailed =
+            new("ELEMENT_EXACT_LENGTH_WITH_DATA_FAILED", $"The element value {{{MessageArgs.Value}}} have different length {{{MessageArgs.CurrentLength}}} that is excepted ({{{MessageArgs.Length}}}).");
+
+        public static readonly MessageDescriptor AttributeExactLengthValidationFailed =
+            new("ATTRIBUTE_EXACT_LENGTH_FAILED", "The attribute value length validation failed.");
+
+        public static readonly MessageDescriptor AttributeExactLengthWithValueValidationFailed =
+            new("ATTRIBUTE_EXACT_LENGTH_WITH_DATA_FAILED", $"The attribute ({{{MessageArgs.Attribute}}}) value {{{MessageArgs.Value}}} have different length {{{MessageArgs.CurrentLength}}} that is excepted ({{{MessageArgs.Length}}}).");
     }
 }

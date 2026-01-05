@@ -477,5 +477,46 @@ namespace XmlFluentValidator.Rules
 
             return this;
         }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithElementExactLength(
+            int length, 
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.ElementValueExactLength,
+                Descriptor = DefaultMessageDescriptors.ElementExactLengthValidationFailed,
+                Path = _xpath,
+                ValueExactLength = length
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    var value = element?.Value.IfNullThenEmpty();
+                    var isValid = value!.Length == length;
+                    if (isValid.IsFalse())
+                    {
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementExactLengthWithValueValidationFailed,
+                            MessageArguments.From(
+                                (MessageArgs.Value, value),
+                                (MessageArgs.CurrentLength, value.Length),
+                                (MessageArgs.Length, length)
+                                ), _xpath);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        }
     }
 }

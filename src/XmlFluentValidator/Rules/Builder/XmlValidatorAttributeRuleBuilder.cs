@@ -43,8 +43,8 @@ namespace XmlFluentValidator.Rules
     {
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithAttribute(
-            string name, 
-            Func<string, bool> predicate, 
+            string name,
+            Func<string, bool> predicate,
             string message = null)
         {
             _steps.Add(doc =>
@@ -60,7 +60,7 @@ namespace XmlFluentValidator.Rules
                         var path = GetElementPath(e) + "/@" + name;
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeInvalid,
                             MessageArguments.From(
-                                (MessageArgs.Name, name), 
+                                (MessageArgs.Name, name),
                                 (MessageArgs.Path, path)), path);
                         fails.Add(failure);
 
@@ -77,7 +77,7 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithAttributeRequired(
-            string name, 
+            string name,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -101,7 +101,7 @@ namespace XmlFluentValidator.Rules
                         var path = GetElementPath(e) + "/@" + name;
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeRequired,
                             MessageArguments.From(
-                                (MessageArgs.Attribute, name), 
+                                (MessageArgs.Attribute, name),
                                 (MessageArgs.Path, path)), path);
 
                         fails.Add(failure);
@@ -119,8 +119,8 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithAttributeMatchesRegex(
-            string name, 
-            string pattern, 
+            string name,
+            string pattern,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -145,9 +145,9 @@ namespace XmlFluentValidator.Rules
                         var path = GetElementPath(e) + "/@" + name;
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeValueMustMatchPattern,
                             MessageArguments.From(
-                                (MessageArgs.Name, name), 
+                                (MessageArgs.Name, name),
                                 (MessageArgs.Actual, attr.Value),
-                                (MessageArgs.Pattern, pattern), 
+                                (MessageArgs.Pattern, pattern),
                                 (MessageArgs.Path, path)), path);
 
                         fails.Add(failure);
@@ -165,8 +165,8 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithAttributeInRange(
-            string name, 
-            int min, 
+            string name,
+            int min,
             int max,
             bool isInclusive = true,
             string message = null)
@@ -196,9 +196,9 @@ namespace XmlFluentValidator.Rules
                         {
                             var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeInRangeWithValue,
                                 MessageArguments.From(
-                                    (MessageArgs.Name, name), 
-                                    (MessageArgs.Value, n), 
-                                    (MessageArgs.Minimum, min), 
+                                    (MessageArgs.Name, name),
+                                    (MessageArgs.Value, n),
+                                    (MessageArgs.Minimum, min),
                                     (MessageArgs.Maximum, max)));
 
                             fails.Add(failure);
@@ -225,7 +225,7 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithAttributeUnique(
-            string name, 
+            string name,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -247,7 +247,7 @@ namespace XmlFluentValidator.Rules
                     var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeUniqueDuplicateFailed,
                         MessageArguments.From(
                             (MessageArgs.Name, name),
-                            (MessageArgs.Path, _xpath), 
+                            (MessageArgs.Path, _xpath),
                             (MessageArgs.Duplicates, string.Join(", ", duplicates))), _xpath);
 
                     return new[] { failure };
@@ -262,8 +262,8 @@ namespace XmlFluentValidator.Rules
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithAttributeValueLength(
             string name,
-            int min, 
-            int? max = null, 
+            int min,
+            int? max = null,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -326,8 +326,8 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithAttributeDataType(
-            string name, 
-            XmlValidationDataTypeKind dataType, 
+            string name,
+            XmlValidationDataTypeKind dataType,
             string message = null)
         {
             DomainEnsure.IsValidEnum<XmlValidationDataTypeKind>(dataType, nameof(dataType));
@@ -357,8 +357,8 @@ namespace XmlFluentValidator.Rules
                         {
                             var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeDataTypeWithParamsValidationFailed,
                                 MessageArguments.From(
-                                    (MessageArgs.Attribute, name), 
-                                    (MessageArgs.DataType, dataType.GetDescription()), 
+                                    (MessageArgs.Attribute, name),
+                                    (MessageArgs.DataType, dataType.GetDescription()),
                                     (MessageArgs.Value, value)), _xpath);
 
                             fails.Add(failure);
@@ -377,7 +377,7 @@ namespace XmlFluentValidator.Rules
             });
 
             return this;
-        } 
+        }
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithAttributeEnumerator(
@@ -421,6 +421,61 @@ namespace XmlFluentValidator.Rules
                     {
                         var path = GetElementPath(element) + "/@" + name;
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeInEnumValidationFailed, path: path);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithAttributeExactLength(
+            string name,
+            int length,
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.AttributeValueExactLength,
+                Descriptor = DefaultMessageDescriptors.AttributeExactLengthValidationFailed,
+                Path = _xpath,
+                AttributeName = name,
+                ValueExactLength = length
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    var attr = element.Attribute(name);
+                    if (attr.IsNotNull() && attr!.Value.IsPresent())
+                    {
+                        var value = attr!.Value.IfNullThenEmpty();
+                        var isValid = value!.Length == length;
+                        if (isValid.IsFalse())
+                        {
+                            var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeExactLengthWithValueValidationFailed,
+                                MessageArguments.From(
+                                    (MessageArgs.Attribute, name),
+                                    (MessageArgs.Value, value),
+                                    (MessageArgs.CurrentLength, value.Length),
+                                    (MessageArgs.Length, length)
+                                    ), _xpath);
+
+                            fails.Add(failure);
+                        }
+                    }
+                    else
+                    {
+                        var path = GetElementPath(element) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeExactLengthValidationFailed, path: path);
 
                         fails.Add(failure);
                     }
