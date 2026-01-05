@@ -437,5 +437,45 @@ namespace XmlFluentValidator.Rules
 
             return this;
         }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithElementEnumerator(
+            string[] rangeEnumerator, 
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.ElementEnumeration,
+                Descriptor = DefaultMessageDescriptors.ElementInEnumValidationFailed,
+                Path = _xpath,
+                InRangeEnumerator = rangeEnumerator,
+                AnnotationDescription = $"ENUM: {rangeEnumerator.NotNull().ListToString(",")}"
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    var value = element?.Value.IfNullThenEmpty();
+                    var isInRange = rangeEnumerator.IsInRangeStringValue(value);
+                    if (isInRange.IsFalse())
+                    {
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementInEnumWithValueValidationFailed,
+                            MessageArguments.From(
+                                (MessageArgs.Value, value)), 
+                            _xpath);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        }
     }
 }

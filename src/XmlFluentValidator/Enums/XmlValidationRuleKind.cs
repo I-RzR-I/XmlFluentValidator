@@ -62,7 +62,12 @@ namespace XmlFluentValidator.Enums
         /// <summary>
         ///     An enum constant representing the element data type option.
         /// </summary>
-        ElementDataType,
+        ElementDataType, 
+        
+        /// <summary>
+        ///     An enum constant representing the element enumeration option.
+        /// </summary>
+        ElementEnumeration,
 
         /* Attribute rules */
         /// <summary>
@@ -94,6 +99,11 @@ namespace XmlFluentValidator.Enums
         ///     An enum constant representing the attribute data type option.
         /// </summary>
         AttributeDataType,
+
+        /// <summary>
+        ///     An enum constant representing the attribute enumeration option.
+        /// </summary>
+        AttributeEnumeration,
 
         /* Runtime-only */
         /// <summary>

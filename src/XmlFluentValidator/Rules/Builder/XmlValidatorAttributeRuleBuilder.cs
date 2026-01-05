@@ -16,6 +16,7 @@
 
 #region U S A G E S
 
+using DomainCommonExtensions.ArraysExtensions;
 using DomainCommonExtensions.CommonExtensions;
 using DomainCommonExtensions.DataTypeExtensions;
 using DomainCommonExtensions.Utilities.Ensure;
@@ -367,6 +368,59 @@ namespace XmlFluentValidator.Rules
                     {
                         var path = GetElementPath(element) + "/@" + name;
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeDataTypeValidationFailed, path: path);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        } 
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithAttributeEnumerator(
+            string name,
+            string[] rangeEnumerator,
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.AttributeEnumeration,
+                Descriptor = DefaultMessageDescriptors.AttributeInEnumValidationFailed,
+                Path = _xpath,
+                AttributeName = name,
+                InRangeEnumerator = rangeEnumerator,
+                AnnotationDescription = $"ENUM: {rangeEnumerator.NotNull().ListToString(",")}"
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    var attr = element.Attribute(name);
+                    if (attr.IsNotNull() && attr!.Value.IsPresent())
+                    {
+                        var value = attr!.Value.IfNullThenEmpty();
+                        var isInRange = rangeEnumerator.IsInRangeStringValue(value);
+                        if (isInRange.IsFalse())
+                        {
+                            var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeInEnumWithValueValidationFailed,
+                                MessageArguments.From(
+                                    (MessageArgs.Attribute, name),
+                                    (MessageArgs.Value, value)), _xpath);
+
+                            fails.Add(failure);
+                        }
+                    }
+                    else
+                    {
+                        var path = GetElementPath(element) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeInEnumValidationFailed, path: path);
 
                         fails.Add(failure);
                     }

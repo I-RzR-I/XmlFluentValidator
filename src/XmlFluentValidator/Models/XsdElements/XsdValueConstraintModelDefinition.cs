@@ -14,6 +14,8 @@
 //  </summary>
 // ***********************************************************************
 
+using System.Collections.Generic;
+
 namespace XmlFluentValidator.Models.XsdElements
 {
     /// -------------------------------------------------------------------------------------------------
@@ -92,5 +94,15 @@ namespace XmlFluentValidator.Models.XsdElements
         /// </value>
         /// =================================================================================================
         public int? MaxExclusive { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Gets or sets the enumeration values.
+        /// </summary>
+        /// <value>
+        ///     The enumeration values.
+        /// </value>
+        /// =================================================================================================
+        public IEnumerable<string> EnumerationValues { get; set; }
     }
 }

@@ -172,6 +172,20 @@ namespace XmlFluentValidator.Abstractions
         /// =================================================================================================
         IXmlValidatorRuleBuilder WithElementDataType(XmlValidationDataTypeKind dataType, string message = null);
 
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With element enumerator.
+        /// </summary>
+        /// <param name="rangeEnumerator">The range enumerator.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementEnumerator(
+            string[] rangeEnumerator,
+            string message = null);
+
         #endregion
 
         #region ATTRIBUTE
@@ -288,6 +302,22 @@ namespace XmlFluentValidator.Abstractions
         /// </returns>
         /// =================================================================================================
         IXmlValidatorRuleBuilder WithAttributeDataType(string name, XmlValidationDataTypeKind dataType, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With attribute enumerator.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="rangeEnumerator">The range enumerator.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeEnumerator(
+            string name,
+            string[] rangeEnumerator,
+            string message = null);
 
         #endregion
 

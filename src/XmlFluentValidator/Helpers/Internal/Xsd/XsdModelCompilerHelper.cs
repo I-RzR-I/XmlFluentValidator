@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using DomainCommonExtensions.ArraysExtensions;
 using DomainCommonExtensions.DataTypeExtensions;
 using XmlFluentValidator.Enums;
 using XmlFluentValidator.Extensions;
@@ -123,6 +124,14 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     ApplyElementLength(element, step);
                     break;
 
+                case XmlValidationRuleKind.ElementDataType:
+                    ApplyElementDataType(element, step);
+                    break;
+
+                case XmlValidationRuleKind.ElementEnumeration:
+                    ApplyElementEnumeration(element, step);
+                    break;
+
                 case XmlValidationRuleKind.AttributeRequired:
                     ApplyAttributeRequired(element, step);
                     break;
@@ -139,12 +148,12 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     ApplyAttributeLength(element, step);
                     break;
 
-                case XmlValidationRuleKind.ElementDataType:
-                    ApplyElementDataType(element, step);
-                    break;
-
                 case XmlValidationRuleKind.AttributeDataType:
                     ApplyAttributeDataType(element, step);
+                    break;
+
+                case XmlValidationRuleKind.AttributeEnumeration:
+                    ApplyAttributeEnumeration(element, step);
                     break;
 
                 case XmlValidationRuleKind.CustomElement:
@@ -158,6 +167,43 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Applies the element enumeration.
+        /// </summary>
+        /// <param name="element">The element definition.</param>
+        /// <param name="step">The xml recorded step.</param>
+        /// =================================================================================================
+        private void ApplyElementEnumeration(XsdElementModelDefinition element, XmlStepRecorder step)
+        {
+            if (step.InRangeEnumerator.IsNotNullOrEmptyEnumerable())
+                element.Constraints.EnumerationValues = step.InRangeEnumerator;
+
+            if (step.AnnotationDescription.IsPresent())
+                element.Documentation = step.AnnotationDescription;
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Applies the attribute enumeration.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown when the requested operation is invalid.
+        /// </exception>
+        /// <param name="element">The element definition.</param>
+        /// <param name="step">The xml recorded step.</param>
+        /// =================================================================================================
+        private void ApplyAttributeEnumeration(XsdElementModelDefinition element, XmlStepRecorder step)
+        {
+            if (string.IsNullOrWhiteSpace(step.AttributeName))
+                throw new InvalidOperationException("Attribute name required");
+
+            var attr = GetOrCreateAttribute(element, step.AttributeName);
+
+            if (step.InRangeEnumerator.IsNotNullOrEmptyEnumerable())
+                attr.Constraints.EnumerationValues = step.InRangeEnumerator;
         }
 
         /// -------------------------------------------------------------------------------------------------

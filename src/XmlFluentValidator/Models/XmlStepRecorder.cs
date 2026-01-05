@@ -16,6 +16,7 @@
 
 #region U S A G E S
 
+using System.Collections.Generic;
 using XmlFluentValidator.Enums;
 using XmlFluentValidator.Models.Message;
 
@@ -130,5 +131,25 @@ namespace XmlFluentValidator.Models
         /// </value>
         /// =================================================================================================
         public bool IsInclusiveValidation { get; set; } = true;
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Gets or sets the in range enumerator.
+        /// </summary>
+        /// <value>
+        ///     The in range enumerator.
+        /// </value>
+        /// =================================================================================================
+        public IEnumerable<string> InRangeEnumerator { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Gets or sets information describing the annotation.
+        /// </summary>
+        /// <value>
+        ///     Information describing the annotation.
+        /// </value>
+        /// =================================================================================================
+        public string AnnotationDescription { get; set; }
     }
 }

@@ -175,5 +175,17 @@ namespace XmlFluentValidator.Helpers.Internal
         public static readonly MessageDescriptor AttributeDataTypeWithParamsValidationFailed =
             new("ATTRIBUTE_DATA_TYPE_WITH_PARAMS_FAILED",
                 $"The attribute ({{{MessageArgs.Attribute}}}) data type ({{{MessageArgs.DataType}}}) for value ({{{MessageArgs.Value}}}) validation failed.");
+        
+        public static readonly MessageDescriptor ElementInEnumValidationFailed =
+            new("ELEMENT_IN_ENUM_FAILED", "The element value is out of allowed range.");
+
+        public static readonly MessageDescriptor ElementInEnumWithValueValidationFailed =
+            new("ELEMENT_IN_ENUM_WITH_DATA_FAILED", $"The element value {{{{{MessageArgs.Value}}}}} is out of allowed range.");
+
+        public static readonly MessageDescriptor AttributeInEnumValidationFailed =
+            new("ATTRIBUTE_IN_ENUM_FAILED", "The attribute value is out of allowed range.");
+
+        public static readonly MessageDescriptor AttributeInEnumWithValueValidationFailed =
+            new("ATTRIBUTE_IN_ENUM_WITH_DATA_FAILED", $"The attribute ({{{MessageArgs.Attribute}}}) value {{{{{MessageArgs.Value}}}}} is out of allowed range.");
     }
 }
