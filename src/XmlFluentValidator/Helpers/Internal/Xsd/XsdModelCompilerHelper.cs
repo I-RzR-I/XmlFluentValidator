@@ -133,6 +133,10 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     ApplyElementExactLength(element, step);
                     break;
 
+                case XmlValidationRuleKind.ElementDocumentation:
+                    ApplyElementDocumentation(element, step);
+                    break;
+
                 case XmlValidationRuleKind.AttributeRequired:
                     ApplyAttributeRequired(element, step);
                     break;
@@ -161,17 +165,57 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     ApplyAttributeExactLength(element, step);
                     break;
 
+                case XmlValidationRuleKind.AttributeDocumentation:
+                    ApplyAttributeDocumentation(element, step);
+                    break;
+
                 case XmlValidationRuleKind.CustomElement:
                 case XmlValidationRuleKind.Condition:
                 case XmlValidationRuleKind.ElementAttributeCross:
                 case XmlValidationRuleKind.ElementUnique:
                 case XmlValidationRuleKind.AttributeUnique:
-                    element.Documentation ??= step.Descriptor?.DefaultTemplate;
+                    element.Documentation = step.AnnotationDocumentation.IfNullOrWhiteSpace(step.Descriptor?.DefaultTemplate);
                     break;
 
                 default:
                     XException.Throw<XValidationRuleOutOfRangeException>();
                     break;
+            }
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Applies the attribute documentation.
+        /// </summary>
+        /// <param name="element">The element definition.</param>
+        /// <param name="step">The xml recorded step.</param>
+        /// =================================================================================================
+        private void ApplyAttributeDocumentation(XsdElementModelDefinition element, XmlStepRecorder step)
+        {
+            var attr = GetOrCreateAttribute(element, step.AttributeName);
+
+            if (step.AnnotationDocumentation.IsPresent() && attr.IsNotNull())
+            {
+                attr.Documentation = attr.Documentation.IsPresent() 
+                    ? $"{attr.Documentation}; {step.AnnotationDocumentation}" 
+                    : step.AnnotationDocumentation;
+            }
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Applies the element documentation.
+        /// </summary>
+        /// <param name="element">The element definition.</param>
+        /// <param name="step">The xml recorded step.</param>
+        /// =================================================================================================
+        private void ApplyElementDocumentation(XsdElementModelDefinition element, XmlStepRecorder step)
+        {
+            if (step.AnnotationDocumentation.IsPresent())
+            {
+                element.Documentation = element.Documentation.IsPresent()
+                    ? $"{element.Documentation}; {step.AnnotationDocumentation}"
+                    : step.AnnotationDocumentation;
             }
         }
 
@@ -193,8 +237,8 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
             if (step.ValueExactLength.IsNotNull())
                 element.Constraints.ExactLength = step.ValueExactLength;
 
-            if (step.AnnotationDescription.IsPresent())
-                element.Documentation = step.AnnotationDescription;
+            if (step.AnnotationDocumentation.IsPresent())
+                element.Documentation = step.AnnotationDocumentation;
         }
 
         /// -------------------------------------------------------------------------------------------------
@@ -232,9 +276,13 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
         {
             if (step.InRangeEnumerator.IsNotNullOrEmptyEnumerable())
                 element.Constraints.EnumerationValues = step.InRangeEnumerator;
-
-            if (step.AnnotationDescription.IsPresent())
-                element.Documentation = step.AnnotationDescription;
+            
+            if (step.AnnotationDocumentation.IsPresent())
+            {
+                element.Documentation = element.Documentation.IsPresent()
+                    ? $"{element.Documentation}; {step.AnnotationDocumentation}"
+                    : step.AnnotationDocumentation;
+            }
         }
 
         /// -------------------------------------------------------------------------------------------------
@@ -254,6 +302,13 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
 
             if (step.InRangeEnumerator.IsNotNullOrEmptyEnumerable())
                 attr.Constraints.EnumerationValues = step.InRangeEnumerator;
+
+            if (step.AnnotationDocumentation.IsPresent() && attr.IsNotNull())
+            {
+                attr.Documentation = attr.Documentation.IsPresent()
+                    ? $"{attr.Documentation}; {step.AnnotationDocumentation}"
+                    : step.AnnotationDocumentation;
+            }
         }
 
         /// -------------------------------------------------------------------------------------------------

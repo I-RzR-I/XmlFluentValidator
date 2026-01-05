@@ -200,6 +200,18 @@ namespace XmlFluentValidator.Abstractions
             int length,
             string message = null);
 
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With element documentation.
+        /// </summary>
+        /// <param name="documentation">The documentation.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementDocumentation(
+            string documentation);
+
         #endregion
 
         #region ATTRIBUTE
@@ -348,6 +360,20 @@ namespace XmlFluentValidator.Abstractions
             string name,
             int length,
             string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With attribute documentation.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="documentation">The documentation.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeDocumentation(
+            string name,
+            string documentation);
 
         #endregion
 

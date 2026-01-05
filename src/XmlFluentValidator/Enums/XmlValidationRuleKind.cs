@@ -69,7 +69,15 @@ namespace XmlFluentValidator.Enums
         /// </summary>
         ElementEnumeration,
         
+        /// <summary>
+        ///     An enum constant representing the element value exact length option.
+        /// </summary>
         ElementValueExactLength,
+
+        /// <summary>
+        ///     An enum constant representing the element documentation option.
+        /// </summary>
+        ElementDocumentation,
 
         /* Attribute rules */
         /// <summary>
@@ -107,7 +115,15 @@ namespace XmlFluentValidator.Enums
         /// </summary>
         AttributeEnumeration,
 
+        /// <summary>
+        ///     An enum constant representing the attribute value exact length option.
+        /// </summary>
         AttributeValueExactLength,
+
+        /// <summary>
+        ///     An enum constant representing the attribute documentation option.
+        /// </summary>
+        AttributeDocumentation,
 
         /* Runtime-only */
         /// <summary>
@@ -115,8 +131,7 @@ namespace XmlFluentValidator.Enums
         /// </summary>
         CustomElement,
 
-        /// <summary>
-        /// 
+        /// <summary> 
         ///     An enum constant representing the element attribute cross option.
         /// </summary>
         ElementAttributeCross,

@@ -450,7 +450,7 @@ namespace XmlFluentValidator.Rules
                 Descriptor = DefaultMessageDescriptors.ElementInEnumValidationFailed,
                 Path = _xpath,
                 InRangeEnumerator = rangeEnumerator,
-                AnnotationDescription = $"ENUM: {rangeEnumerator.NotNull().ListToString(",")}"
+                AnnotationDocumentation = $"ENUM: {rangeEnumerator.NotNull().ListToString(",")}"
             });
 
             _steps.Add(doc =>
@@ -514,6 +514,21 @@ namespace XmlFluentValidator.Rules
                 }
 
                 return fails;
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithElementDocumentation(
+            string documentation)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.ElementDocumentation,
+                Path = _xpath,
+                AnnotationDocumentation = documentation
             });
 
             return this;

@@ -154,12 +154,12 @@ namespace XmlFluentValidator.Models
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Gets or sets information describing the annotation.
+        ///     Gets or sets information of the annotation documentation.
         /// </summary>
         /// <value>
-        ///     Information describing the annotation.
+        ///     Information of the annotation documentation.
         /// </value>
         /// =================================================================================================
-        public string AnnotationDescription { get; set; }
+        public string AnnotationDocumentation { get; set; }
     }
 }

@@ -151,6 +151,10 @@ namespace XmlFluentValidator
                 Name = elementDefinition.Name
             };
 
+            var annotation = BuildAnnotation(elementDefinition.Documentation);
+            if (annotation.IsNotNull())
+                schemaElement.Annotation = annotation;
+
             if (isRoot.IsFalse())
             {
                 schemaElement.MinOccurs = elementDefinition.MinOccurs ?? 1;
@@ -165,6 +169,49 @@ namespace XmlFluentValidator
                 schemaElement.SchemaType = EmitSimpleType(elementDefinition);
 
             return schemaElement;
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Emit XML schema attribute.
+        /// </summary>
+        /// <param name="attributeDefinition">The attribute definition.</param>
+        /// <returns>
+        ///     An XmlSchemaAttribute.
+        /// </returns>
+        /// =================================================================================================
+        private XmlSchemaAttribute EmitAttribute(XsdAttributeModelDefinition attributeDefinition)
+        {
+            var typeOfValue = attributeDefinition.ValueType.IfIsNull(XmlValidationDataTypeKind.String);
+
+            DomainEnsure.IsNotNull(attributeDefinition, nameof(attributeDefinition));
+
+            var xmlAttribute = new XmlSchemaAttribute
+            {
+                Name = attributeDefinition.Name,
+                Use = attributeDefinition.IsRequired.IsTrue()
+                    ? XmlSchemaUse.Required
+                    : XmlSchemaUse.Optional
+            };
+
+            var annotation = BuildAnnotation(attributeDefinition.Documentation);
+            if (annotation.IsNotNull())
+                xmlAttribute.Annotation = annotation;
+
+            // Attributes must always be simple types
+            var restriction = new XmlSchemaSimpleTypeRestriction
+            {
+                BaseTypeName = BuildBaseTypeName(typeOfValue)
+            };
+
+            EmitFacets(restriction.Facets, attributeDefinition.Constraints);
+
+            xmlAttribute.SchemaType = new XmlSchemaSimpleType
+            {
+                Content = restriction
+            };
+
+            return xmlAttribute;
         }
 
         /// -------------------------------------------------------------------------------------------------
@@ -361,45 +408,6 @@ namespace XmlFluentValidator
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Emit XML schema attribute.
-        /// </summary>
-        /// <param name="attributeDefinition">The attribute definition.</param>
-        /// <returns>
-        ///     An XmlSchemaAttribute.
-        /// </returns>
-        /// =================================================================================================
-        private XmlSchemaAttribute EmitAttribute(XsdAttributeModelDefinition attributeDefinition)
-        {
-            var typeOfValue = attributeDefinition.ValueType.IfIsNull(XmlValidationDataTypeKind.String);
-
-            DomainEnsure.IsNotNull(attributeDefinition, nameof(attributeDefinition));
-
-            var xmlAttribute = new XmlSchemaAttribute
-            {
-                Name = attributeDefinition.Name,
-                Use = attributeDefinition.IsRequired.IsTrue()
-                    ? XmlSchemaUse.Required
-                    : XmlSchemaUse.Optional
-            };
-
-            // Attributes must always be simple types
-            var restriction = new XmlSchemaSimpleTypeRestriction
-            {
-                BaseTypeName = BuildBaseTypeName(typeOfValue)
-            };
-
-            EmitFacets(restriction.Facets, attributeDefinition.Constraints);
-
-            xmlAttribute.SchemaType = new XmlSchemaSimpleType
-            {
-                Content = restriction,
-            };
-
-            return xmlAttribute;
-        }
-
-        /// -------------------------------------------------------------------------------------------------
-        /// <summary>
         ///     Builds base type name.
         /// </summary>
         /// <param name="dataTypeKind">The data type kind.</param>
@@ -446,6 +454,31 @@ namespace XmlFluentValidator
             var type = new XmlQualifiedName(xsdType, XsNs);
 
             return type;
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Builds an annotation.
+        /// </summary>
+        /// <param name="documentation">The documentation.</param>
+        /// <returns>
+        ///     An XmlSchemaAnnotation.
+        /// </returns>
+        /// =================================================================================================
+        private static XmlSchemaAnnotation BuildAnnotation(string documentation)
+        {
+            if (documentation.IsMissing())
+                return null;
+
+            var doc = new XmlSchemaDocumentation
+            {
+                Markup = [new XmlDocument().CreateTextNode(documentation)]
+            };
+
+            return new XmlSchemaAnnotation
+            {
+                Items = { doc }
+            };
         }
     }
 }
