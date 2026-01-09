@@ -161,5 +161,15 @@ namespace XmlFluentValidator.Models
         /// </value>
         /// =================================================================================================
         public string AnnotationDocumentation { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Gets or sets the is nullable.
+        /// </summary>
+        /// <value>
+        ///     The is nullable.
+        /// </value>
+        /// =================================================================================================
+        public bool? IsNullable { get; set; }
     }
 }

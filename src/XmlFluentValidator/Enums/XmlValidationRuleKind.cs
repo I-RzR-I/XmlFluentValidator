@@ -79,6 +79,11 @@ namespace XmlFluentValidator.Enums
         /// </summary>
         ElementDocumentation,
 
+        /// <summary>
+        ///     An enum constant representing the element nullable option.
+        /// </summary>
+        ElementNullable,
+
         /* Attribute rules */
         /// <summary>
         ///     An enum constant representing the attribute required option.

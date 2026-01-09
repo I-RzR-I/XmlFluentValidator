@@ -32,6 +32,7 @@ using XmlFluentValidator.Helpers.Internal;
 using XmlFluentValidator.Models;
 using XmlFluentValidator.Models.Message;
 
+// ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UseCollectionExpression
@@ -88,7 +89,7 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithElementValue(
-            Func<string, bool> predicate, 
+            Func<string, bool> predicate,
             string message = null)
         {
             _steps.Add(doc =>
@@ -165,7 +166,7 @@ namespace XmlFluentValidator.Rules
                             var path = GetElementPath(e);
                             var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementRequired,
                                 MessageArguments.From(
-                                    (MessageArgs.Element, e.Name.LocalName), 
+                                    (MessageArgs.Element, e.Name.LocalName),
                                     (MessageArgs.Path, path)), path);
                             fails.Add(failure);
 
@@ -183,7 +184,7 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithElementMatchesRegex(
-            string pattern, 
+            string pattern,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -207,8 +208,8 @@ namespace XmlFluentValidator.Rules
                         var path = GetElementPath(e);
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ValueMustMatchPattern,
                             MessageArguments.From(
-                                (MessageArgs.Actual, val), 
-                                (MessageArgs.Pattern, pattern), 
+                                (MessageArgs.Actual, val),
+                                (MessageArgs.Pattern, pattern),
                                 (MessageArgs.Path, path)), path);
 
                         fails.Add(failure);
@@ -226,8 +227,8 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithElementInRange(
-            int min, 
-            int max, 
+            int min,
+            int max,
             bool isInclusive = true,
             string message = null)
         {
@@ -255,8 +256,8 @@ namespace XmlFluentValidator.Rules
                             var path = GetElementPath(e);
                             var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementInRangeWithValue,
                                 MessageArguments.From(
-                                    (MessageArgs.Value, n), 
-                                    (MessageArgs.Minimum, min), 
+                                    (MessageArgs.Value, n),
+                                    (MessageArgs.Minimum, min),
                                     (MessageArgs.Maximum, max)), path);
 
                             fails.Add(failure);
@@ -314,7 +315,7 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithElementMaxOccurs(
-            int max, 
+            int max,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -347,7 +348,7 @@ namespace XmlFluentValidator.Rules
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithElementValueLength(
             int min,
-            int? max = null, 
+            int? max = null,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -383,7 +384,7 @@ namespace XmlFluentValidator.Rules
                         {
                             var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementValueWithMinMaxLengthDataWithParamsFailed,
                                 MessageArguments.From(
-                                    (MessageArgs.Minimum, min), 
+                                    (MessageArgs.Minimum, min),
                                     (MessageArgs.Maximum, max)), _xpath);
 
                             fails.Add(failure);
@@ -399,7 +400,7 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithElementDataType(
-            XmlValidationDataTypeKind dataType, 
+            XmlValidationDataTypeKind dataType,
             string message = null)
         {
             DomainEnsure.IsValidEnum<XmlValidationDataTypeKind>(dataType, nameof(dataType));
@@ -425,7 +426,7 @@ namespace XmlFluentValidator.Rules
                     {
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementDataTypeWithParamsValidationFailed,
                             MessageArguments.From(
-                                (MessageArgs.DataType, dataType.GetDescription()), 
+                                (MessageArgs.DataType, dataType.GetDescription()),
                                 (MessageArgs.Value, value)), _xpath);
 
                         fails.Add(failure);
@@ -440,7 +441,7 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithElementEnumerator(
-            string[] rangeEnumerator, 
+            string[] rangeEnumerator,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -465,7 +466,7 @@ namespace XmlFluentValidator.Rules
                     {
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementInEnumWithValueValidationFailed,
                             MessageArguments.From(
-                                (MessageArgs.Value, value)), 
+                                (MessageArgs.Value, value)),
                             _xpath);
 
                         fails.Add(failure);
@@ -480,7 +481,7 @@ namespace XmlFluentValidator.Rules
 
         /// <inheritdoc />
         public IXmlValidatorRuleBuilder WithElementExactLength(
-            int length, 
+            int length,
             string message = null)
         {
             var rule = _validator.CurrentRule;
@@ -529,6 +530,50 @@ namespace XmlFluentValidator.Rules
                 Kind = XmlValidationRuleKind.ElementDocumentation,
                 Path = _xpath,
                 AnnotationDocumentation = documentation
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithElementNullable(
+            bool? isNullable = true,
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.ElementNullable,
+                Descriptor = DefaultMessageDescriptors.ElementNullableValidationFailed,
+                Path = _xpath,
+                IsNullable = isNullable
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    var attributes = element.Attributes();
+                    var nilAttribute = attributes.FirstOrDefault(x => x.Name == "nil");
+                    var xsiNilAttribute = attributes.FirstOrDefault(x => x.Name.ToString().EndsWith(":nil")
+                                                                         || x.Name.ToString().EndsWith("}nil"));
+                    if (isNullable.IsFalse() && (element.IsNull() 
+                                                 || (nilAttribute.IsNotNull() && nilAttribute!.Value.IsTrue().IsFalse())
+                                                 || (xsiNilAttribute.IsNotNull() && xsiNilAttribute!.Value.IsTrue().IsFalse()))
+                        && element.Value.IsNullOrEmpty())
+                    {
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementNullableWithDataValidationFailed,
+                            MessageArguments.From(
+                                (MessageArgs.Value, element.Name)
+                            ), _xpath);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
             });
 
             return this;

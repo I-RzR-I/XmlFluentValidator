@@ -131,6 +131,16 @@ namespace XmlFluentValidator.Models.XsdElements
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
+        ///     Gets or sets a value indicating whether this object is nullable.
+        /// </summary>
+        /// <value>
+        ///     True if this object is nullable, false if not.
+        /// </value>
+        /// =================================================================================================
+        public bool? IsNullable { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
         ///     Initializes a new instance of the <see cref="XsdElementModelDefinition"/> class.
         /// </summary>
         /// =================================================================================================

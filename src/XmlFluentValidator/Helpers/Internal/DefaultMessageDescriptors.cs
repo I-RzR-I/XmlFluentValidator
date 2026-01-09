@@ -185,5 +185,11 @@ namespace XmlFluentValidator.Helpers.Internal
 
         public static readonly MessageDescriptor AttributeExactLengthWithValueValidationFailed =
             new("ATTRIBUTE_EXACT_LENGTH_WITH_DATA_FAILED", $"The attribute ({{{MessageArgs.Attribute}}}) value {{{MessageArgs.Value}}} have different length {{{MessageArgs.CurrentLength}}} that is excepted ({{{MessageArgs.Length}}}).");
+
+        public static readonly MessageDescriptor ElementNullableValidationFailed =
+            new("ELEMENT_NULLABLE_FAILED", "The element nullable (nil/nillable) validation failed.");
+
+        public static readonly MessageDescriptor ElementNullableWithDataValidationFailed =
+            new("ELEMENT_NULLABLE_WITH_DATA_FAILED", $"The element {{{MessageArgs.Value}}} nullable (nil/nillable) validation failed.");
     }
 }

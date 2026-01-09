@@ -151,6 +151,9 @@ namespace XmlFluentValidator
                 Name = elementDefinition.Name
             };
 
+            if (elementDefinition.IsNullable.IsNotNull())
+                schemaElement.IsNillable = (bool)elementDefinition.IsNullable!;
+
             var annotation = BuildAnnotation(elementDefinition.Documentation);
             if (annotation.IsNotNull())
                 schemaElement.Annotation = annotation;

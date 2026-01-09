@@ -68,6 +68,9 @@ namespace XmlValidatorTests.Tests
         <AmountPaid>249.97</AmountPaid>
     </Payment>
     <Status>Shipped</Status>
+    <ReferenceId></ReferenceId>
+    <RelatedItemId nil=""true""></RelatedItemId>
+    <RelatedItemId2 xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:nil=""false"" />
 </Order>");
 
             var validator = new XmlValidator()
@@ -186,6 +189,9 @@ namespace XmlValidatorTests.Tests
                 .ForPath("Order/Status")
                     .WithElementRequired()
                     .WithElementMaxOccurs(1)
+                .Done()
+                .ForPath("Order/RelatedItemId2")
+                    .WithElementNullable()
                 .Done();
 
             var result = validator.Validate(xml);

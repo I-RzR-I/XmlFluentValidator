@@ -46,6 +46,9 @@ namespace XmlFluentValidator.Helpers.Internal
         public const string EmitElementConflictHaveValueAndChildElement = "Element ({0}) cannot have both value and child elements!";
         public const string EmitElementConflictHaveFacetAndChildExist = "Element ({0}) cannot have facets when child elements exist!";
         public const string EmitInvalidComplexType = "Invalid complex type state for element ({0})!";
+
+        public const string ElementCantBeNullableAndOptional = "Element ({0}) cannot be both nillable and optional!";
+        public const string ElementCantBeNullableAndEnum = "Element ({0}) cannot be nillable when enumeration is defined!";
     }
 }
 

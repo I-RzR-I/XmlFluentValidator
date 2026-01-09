@@ -212,6 +212,20 @@ namespace XmlFluentValidator.Abstractions
         IXmlValidatorRuleBuilder WithElementDocumentation(
             string documentation);
 
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With element nullable.
+        /// </summary>
+        /// <param name="isNullable">(Optional) The is nullable.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementNullable(
+            bool? isNullable = true,
+            string message = null);
+
         #endregion
 
         #region ATTRIBUTE

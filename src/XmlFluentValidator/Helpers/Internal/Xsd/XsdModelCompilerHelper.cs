@@ -16,10 +16,10 @@
 
 #region U S A G E S
 
-using System.Collections.Generic;
 using DomainCommonExtensions.ArraysExtensions;
 using DomainCommonExtensions.CommonExtensions;
 using DomainCommonExtensions.DataTypeExtensions;
+using System.Collections.Generic;
 using XmlFluentValidator.Enums;
 using XmlFluentValidator.Exceptions;
 using XmlFluentValidator.Extensions;
@@ -169,6 +169,10 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     ApplyAttributeDocumentation(element, step);
                     break;
 
+                case XmlValidationRuleKind.ElementNullable:
+                    ApplyElementNullable(element, step);
+                    break;
+
                 case XmlValidationRuleKind.CustomElement:
                 case XmlValidationRuleKind.Condition:
                 case XmlValidationRuleKind.ElementAttributeCross:
@@ -180,6 +184,27 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                 default:
                     XException.Throw<XValidationRuleOutOfRangeException>();
                     break;
+            }
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Applies the element nullable.
+        /// </summary>
+        /// <param name="element">The element definition.</param>
+        /// <param name="step">The xml recorded step.</param>
+        /// =================================================================================================
+        private void ApplyElementNullable(XsdElementModelDefinition element, XmlStepRecorder step)
+        {
+            if (step.IsNullable.IsNotNull())
+            {
+                if (element.IsNullable.IsTrue() && element.MinOccurs.IsZero())
+                    XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.ElementCantBeNullableAndOptional, element.Name);
+
+                if (element.IsNullable.IsTrue() && element.Constraints.EnumerationValues.IsNotNullOrEmptyEnumerable())
+                    XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.ElementCantBeNullableAndEnum, element.Name);
+
+                element.IsNullable = step.IsNullable;
             }
         }
 
