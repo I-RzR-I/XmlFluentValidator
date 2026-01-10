@@ -1,3 +1,7 @@
+### **v1.0.0-rc.1** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 10-01-2025
+-> [DEV] - Add the `null` (`nil`) element validation and xsd emit. <br />
+-> [DEV] - Adjust the docs from readme and using.
+
 ### v**1.0.0-alpha.4** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 06-01-2025
 -> [DEV] - Add possibilities to set inclusive/exclusive length validation (`WithElementInRange`, `WithAttributeInRange`);<br />
 -> [DEV] - Add new validation rule for exact value length (`WithElementExactLength`, `WithAttributeExactLength`);<br />
