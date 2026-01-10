@@ -1,49 +1,119 @@
-> **Note** This repository is developed for .netstandard2.0+
+> **Note** This repository is developed for .netstandard2.0+ <br />
+> A fluent, runtime-first XML validation engine with XSD generation and documentation support.
 
 [![NuGet Version](https://img.shields.io/nuget/v/XmlFluentValidator.svg?style=flat&logo=nuget)](https://www.nuget.org/packages/XmlFluentValidator/)
 [![Nuget Downloads](https://img.shields.io/nuget/dt/XmlFluentValidator.svg?style=flat&logo=nuget)](https://www.nuget.org/packages/XmlFluentValidator)
 
-🔎 Overview
+### 🔎 Overview
 
-This library allows you to:
-- Define XML validation rules with a fluent builder syntax.
-- Validate XML documents at runtime.
-- Generate XSD schemas that reflect those rules.
-- Document runtime-only rules (like custom logic) in <xs:annotation> blocks.
+**XmlFluentValidator** is a flexible XML validation library designed for scenarios where:
+- Validation rules must be **defined programmatically**
+- XML needs to be **validated at runtime**
+- **XSD schemas** must be generated from code-based rules
+- Some rules cannot be expressed in XSD but still need to be **documented**
 
+The library combines a **fluent builder API**, runtime validation, and schema generation into a single, cohesive solution.
 
----
-
-✨ Features
-
-- Element rules: Required, regex, numeric ranges, uniqueness.
-- Attribute rules: Required, regex, numeric ranges, uniqueness.
-- Nested paths: Arbitrary depth (customer/address/street).
-- Attribute shorthand: items/item@sku.
-- Custom rules: Inject arbitrary validation logic.
-- Cross rules: Validate relationships between element values and attributes.
-- Global rules: Apply checks across the entire document.
+**What you can do**
+- Define XML validation rules using a fluent, readable API
+- Validate XML documents at runtime
+- Generate XSD schemas directly from validation rules
+- Document runtime-only rules (e.g., custom logic) using `<xs:annotation>`
+- Mix schema validation and custom validation seamlessly
 
 ---
 
-📖 Fluent API Reference
+### ✨  Key Features
 
-Element Rules
-- `.WithElementRequired()` → element must exist.
-- `.WithElementOptional()` → element may be absent.
-- `.WithElementMatchesRegex(pattern)` → element text must match regex.
-- `.WithElementInRange(min, max)` → element text must be numeric within range.
-- `.WithElementUnique()` → element values must be unique.
-- etc
+**Element Validation**
+- Required / optional elements
+- Regex validation
+- Numeric and length ranges
+- Enumeration (enum-like constraints)
+- MaxOccurs and cardinality rules
+- Data type enforcement
+- Nullable (`xs:nillable`) support
+- Uniqueness constraints
 
-Attribute Rules
-- `.WithAttributeRequired(name)` → attribute must exist.
-- `.WithAttributeMatchesRegex(pattern)` → attribute value must match regex.
-- `.WithAttributeInRange(name, min, max)` → attribute numeric range.
-- `.WithAttributeUnique(name)` → attribute values must be unique.
-- etc
+**Attribute Validation**
+- Required attributes
+- Regex, range, length, and enumeration rules
+- Attribute uniqueness
+- Attribute-level documentation
+- Element–attribute cross-validation
 
-Custom Rules
+**Advanced Capabilities**
+- Deeply nested paths (`/customer/address/street`)
+- Attribute shorthand (`items/item@sku`)
+- Cross-field validation
+- Global document rules
+- Custom, user-defined validation logic
+- Rule severity levels
+- Short-circuiting (`StopOnFailure`)
+- Automatic XSD documentation generation
+
+---
+
+### 📖 Fluent Validator API Reference
+- `.ForPath(xpath)` → For path. Rule for specific path.
+- `.ForAttribute(xpath)` → For attribute. Rule for specific attribute.
+- `.ForElement(elementPath)` → For element. Rule for specific element.
+- `.UseSchema(schemaSet, [stopOnSchemaErrors])` → .Use schema (for validation).
+- `.GlobalRule(predicate, [message])` → Global rule.
+- `.Validate(doc)` → Validates the given document.
+
+### 📖 Fluent API Valdiation Rules Reference
+
+**Element Rules**
+- `.WithElementMustExist([message])` → Must exist. The element must exist.
+- `.WithElementCount(predicate, [message])` → Counts.
+- `.WithElementValue(predicate, [message])` → Set validation rule for element value.
+- `.WithElementOptional([message])` → Specify the element validation as not required.
+- `.WithElementRequired([message])` → Set element validation rule as required.
+- `.WithElementMatchesRegex(pattern, [message])` → Matches RegEx. Set element validation rule as regular expression.
+- `.WithElementInRange(min, max, [isInclusive], [message])` → In range. Set element validation rule as in range between minimum and maximum value.
+- `.WithElementUnique([message])` →  Set element validation rule as unique value.
+- `.WithElementMaxOccurs(max, [message])` → Set element validation rule as maximum occurs.
+- `.WithElementValueLength(min, [max], [message])` → With element value length.
+- `.WithElementDataType(dataType, [message])` → With element data type.
+- `.WithElementEnumerator(rangeEnumerator, [message])` → With element enumerator (like enum values).
+- `.WithElementExactLength(length, [message])` → With element exact length.
+- `.WithElementDocumentation(documentation)` → With element documentation. Set annotation/documentaion.
+- `.WithElementNullable([isNullable], [message])` → With element nullable.
+
+**Attribute Rules**
+- `.WithAttribute(name, predicate, [message])` → Set validation rule for element attribute.
+- `.WithAttributeRequired(name, [message])` → IsRequired attribute. Set attribute validation rule as required.
+- `.WithAttributeMatchesRegex(name, pattern, [message])` → Attribute matches RegEx. Set attribute validation rule as regular expression.
+- `.WithAttributeInRange(name, min, max, [isInclusive], [message])` → Attribute in range. Set attribute validation rule as in range between minimum and maximum value.
+- `.WithAttributeUnique(name, [message])` → Attribute unique. Set specific attribute as unique.
+- `.ElementAttributeCrossRule(name, predicate, [message])` → Element attribute cross rule. Set cross validation for element and specific element attribute.
+- `.WithAttributeValueLength(name, min, [max], [message])` → With attribute value length.
+- `.WithAttributeDataType(name, dataType, [message])` → With attribute data type.
+- `.WithAttributeEnumerator(name, rangeEnumerator, [message])` → With attribute enumerator.
+- `.WithAttributeExactLength(name, length, [message])` → With attribute exact length.
+- `.WithAttributeDocumentation(name, documentation)` → With attribute documentation.
+
+**Messages**
+- `.WithMessage(template, arguments)` → With message. Set custom validation message.
+- `.WithMessage(message)` → With message. Set custom validation message.
+- `.WithMessageForAll(message)` → With message for all.
+
+**Other rules**
+- `.All(predicate, [message])` → All.
+- `.Any(predicate, [message])` → Any.
+- `.When(condition, [message])` → When the given condition.
+- `.CustomElementRule(predicate, [message])` → Custom element rule. an be used custom defined(registered) rule or defined in specific context.
+- `.Custom(handler, [message])` → Customs. Set the custom (user defined) validation method.
+- `.UseCustomRule(ruleName, [message])` → Use custom rule. Set the custom rule name for execution.
+- `.WithName(displayName)` →  With name. Set the specific name for path.
+- `.WithSeverity(severity)` → With severity. Set the validation message severity.
+- `.StopOnFailure()` → Stops on failure. Short-circuit within this rule chain.
+- `.Done()` → Gets the done action. Ends the current element rule chain and returns to validator.
+
+--- 
+
+#### Custom Rules
 ```csharp
 .Custom(ctx =>
 {
