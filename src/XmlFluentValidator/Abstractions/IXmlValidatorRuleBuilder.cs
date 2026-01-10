@@ -247,7 +247,7 @@ namespace XmlFluentValidator.Abstractions
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     IsRequired attribute.
-        ///     Set attribute validation rule as unique value.
+        ///     Set attribute validation rule as required.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="message">(Optional) The message.</param>
@@ -291,7 +291,7 @@ namespace XmlFluentValidator.Abstractions
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Attribute unique.
-        ///     Set specific attribute as required.
+        ///     Set specific attribute as unique.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="message">(Optional) The message.</param>

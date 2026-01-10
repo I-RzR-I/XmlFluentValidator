@@ -254,7 +254,9 @@ namespace XmlFluentValidator.Rules
             rule.RecordedSteps.Add(new XmlStepRecorder()
             {
                 Kind = XmlValidationRuleKind.CustomElement,
-                Descriptor = DefaultMessageDescriptors.CustomValidationFailed,
+                Descriptor = message.IsPresent()
+                    ? new MessageDescriptor(message, XmlMessageSeverity.Error)
+                    : DefaultMessageDescriptors.CustomValidationFailed,
                 Path = _xpath
             });
 
