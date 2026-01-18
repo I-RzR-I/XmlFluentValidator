@@ -154,6 +154,9 @@ namespace XmlFluentValidator
             if (elementDefinition.IsNullable.IsNotNull())
                 schemaElement.IsNillable = (bool)elementDefinition.IsNullable!;
 
+            if (elementDefinition.FixedValue.IsPresent())
+                schemaElement.FixedValue = elementDefinition.FixedValue;
+
             var annotation = BuildAnnotation(elementDefinition.Documentation);
             if (annotation.IsNotNull())
                 schemaElement.Annotation = annotation;
@@ -196,6 +199,9 @@ namespace XmlFluentValidator
                     ? XmlSchemaUse.Required
                     : XmlSchemaUse.Optional
             };
+
+            if (attributeDefinition.FixedValue.IsPresent())
+                xmlAttribute.FixedValue = attributeDefinition.FixedValue;
 
             var annotation = BuildAnnotation(attributeDefinition.Documentation);
             if (annotation.IsNotNull())

@@ -94,7 +94,7 @@ namespace XmlFluentValidator.Helpers.Internal
             new("ELEMENT_ATTRIBUTE_IN_RANGE", "Value must be between in range.");
 
         public static readonly MessageDescriptor ValueIsNotInt =
-            new("VALUE_NOT_INT", "Value '{Value}' is not a valid integer.");
+            new("VALUE_NOT_INT", $"Value '{{{MessageArgs.Value}}}' is not a valid integer.");
 
         public static readonly MessageDescriptor ElementUniqueDuplicateFailed =
             new("ELEMENT_UNIQUE_FAILED", $"Duplicate values found: '{{{MessageArgs.Duplicates}}}'");
@@ -178,7 +178,7 @@ namespace XmlFluentValidator.Helpers.Internal
             new("ELEMENT_EXACT_LENGTH_FAILED", "The element value length validation failed.");
 
         public static readonly MessageDescriptor ElementExactLengthWithValueValidationFailed =
-            new("ELEMENT_EXACT_LENGTH_WITH_DATA_FAILED", $"The element value {{{MessageArgs.Value}}} have different length {{{MessageArgs.CurrentLength}}} that is excepted ({{{MessageArgs.Length}}}).");
+            new("ELEMENT_EXACT_LENGTH_WITH_DATA_FAILED", $"The element value {{{MessageArgs.Actual}}} have different length {{{MessageArgs.CurrentLength}}} that is excepted ({{{MessageArgs.Length}}}).");
 
         public static readonly MessageDescriptor AttributeExactLengthValidationFailed =
             new("ATTRIBUTE_EXACT_LENGTH_FAILED", "The attribute value length validation failed.");
@@ -190,6 +190,18 @@ namespace XmlFluentValidator.Helpers.Internal
             new("ELEMENT_NULLABLE_FAILED", "The element nullable (nil/nillable) validation failed.");
 
         public static readonly MessageDescriptor ElementNullableWithDataValidationFailed =
-            new("ELEMENT_NULLABLE_WITH_DATA_FAILED", $"The element {{{MessageArgs.Value}}} nullable (nil/nillable) validation failed.");
+            new("ELEMENT_NULLABLE_WITH_DATA_FAILED", $"The element {{{MessageArgs.Element}}} nullable (nil/nillable) validation failed.");
+
+        public static readonly MessageDescriptor ElementFixedValidationFailed =
+            new("ELEMENT_FIXED_VALUE_FAILED", "The element with fixed value validation failed.");
+
+        public static readonly MessageDescriptor ElementFixedWithDataValidationFailed =
+            new("ELEMENT_FIXED_VALUE_WITH_DATA_FAILED", $"The element {{{MessageArgs.Element}}} with value {{{MessageArgs.Actual}}}, fixed value {{{MessageArgs.Value}}} validation failed.");
+
+        public static readonly MessageDescriptor AttributeFixedValidationFailed =
+            new("ATTRIBUTE_FIXED_VALUE_FAILED", "The attribute with fixed value validation failed.");
+
+        public static readonly MessageDescriptor AttributeFixedWithDataValidationFailed =
+            new("ATTRIBUTE_FIXED_VALUE_WITH_DATA_FAILED", $"The attribute {{{MessageArgs.Attribute}}} with value {{{MessageArgs.Actual}}}, fixed value {{{MessageArgs.Value}}} validation failed.");
     }
 }

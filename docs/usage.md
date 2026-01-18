@@ -37,6 +37,7 @@ var result = validator.Validate(xmlDocument);
 | `.WithElementEnumerator(values, [message])`               | Restricts values to enumeration. Generates `<xs:enumeration>`.                      | `.ForPath("status").WithElementEnumerator(new[] { "New", "Paid" })` |
 | `.WithElementNullable([isNullable], [message])`           | Controls `xs:nillable`.                                                             | `.ForPath("description").WithElementNullable(true)`                 |
 | `.WithElementDocumentation(text)`                         | Adds `<xs:annotation>` documentation.                                               | `.ForPath("id").WithElementDocumentation("Order identifier")`       |
+| `.WithElementFixedValue(fixedValue, [message])`                         | Adds `<xs:fixed>` fixed value restrinction.                                               | `.ForPath("Order/StoreName").WithElementFixedValue("STOREX")`       |
 
 ### Attribute Rules
 
@@ -52,6 +53,7 @@ var result = validator.Validate(xmlDocument);
 | `.WithAttributeDataType(name, type, [message])`                   | Enforces attribute XSD data type.                           | `.ForPath("item@qty").WithAttributeDataType("qty", XmlDataType.Int)`           |
 | `.WithAttributeEnumerator(name, values, [message])`               | Restricts attribute values to enumeration.                  | `.ForPath("item@type").WithAttributeEnumerator("type", new[] { "A", "B" })`    |
 | `.WithAttributeDocumentation(name, text)`                         | Adds documentation to attribute in XSD.                     | `.ForPath("item@sku").WithAttributeDocumentation("sku", "Stock keeping unit")` |
+| `.WithAttributeFixedValue(name, fixedValue, [message])`                         | Adds `<xs:fixed>` fixed value restrinction.                                               | `.ForPath("Order/StoreName").WithAttributeFixedValue("id", "xsd123")`       |
 
 ### Collection & Logical Rules
 

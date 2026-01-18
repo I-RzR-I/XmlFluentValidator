@@ -30,6 +30,7 @@ namespace XmlValidatorTests.Tests
         {
             var xml = XDocument.Parse(@"
 <Order>
+    <StoreName id=""xsd123"">MyGbStore</StoreName>
     <OrderID>12345</OrderID>
     <Customer>
         <CustomerID>67890</CustomerID>
@@ -50,13 +51,13 @@ namespace XmlValidatorTests.Tests
             <ItemID sku=""P-000154"">1001</ItemID>
             <ProductName>Wireless Headphones</ProductName>
             <Quantity>2</Quantity>
-            <Price priceType=""standard"">99.99</Price>
+            <Price priceType=""standard"" discountPercent=""0"">99.99</Price>
         </Item>
         <Item>
             <ItemID sku=""P-009154"">1002</ItemID>
             <ProductName>Bluetooth Speaker</ProductName>
             <Quantity>1</Quantity>
-            <Price priceType=""discount"">49.99</Price>
+            <Price priceType=""discount""  discountPercent=""10.15"">49.99</Price>
         </Item>
     </Items>
     <TotalAmount>249.97</TotalAmount>
@@ -73,7 +74,7 @@ namespace XmlValidatorTests.Tests
     <RelatedItemId2 xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:nil=""false"" />
 </Order>");
 
-            var validator = new XmlValidator()
+            var validator = new XmlValidator("Order")
                 .ForPath("Order/OrderID")
                     .WithElementRequired()
                     .WithElementMaxOccurs(1)
@@ -149,10 +150,14 @@ namespace XmlValidatorTests.Tests
                 .Done()
                 .ForPath("Order/Items/Item/Price")
                     .WithElementRequired()
-                    .WithAttributeRequired("priceType")
                     .WithElementDataType(XmlValidationDataTypeKind.Decimal)
+
+                    .WithAttributeRequired("priceType")
                     .WithAttributeDataType("priceType", XmlValidationDataTypeKind.String)
                     .WithAttributeEnumerator("priceType", new[] { "standard", "discount" })
+
+                    .WithAttributeRequired("discountPercent")
+                    .WithAttributeDataType("discountPercent", XmlValidationDataTypeKind.Decimal)
                 .Done()
                 .ForPath("Order/TotalAmount")
                     .WithElementRequired()
@@ -192,6 +197,11 @@ namespace XmlValidatorTests.Tests
                 .Done()
                 .ForPath("Order/RelatedItemId2")
                     .WithElementNullable()
+                .Done()
+                .ForPath("Order/StoreName")
+                    .WithElementRequired()
+                    .WithElementMaxOccurs(1)
+                    .WithElementFixedValue("MyGbStore")
                 .Done();
 
             var result = validator.Validate(xml);

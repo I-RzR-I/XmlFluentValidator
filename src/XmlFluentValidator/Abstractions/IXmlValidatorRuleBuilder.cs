@@ -226,6 +226,20 @@ namespace XmlFluentValidator.Abstractions
             bool? isNullable = true,
             string message = null);
 
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With element fixed value.
+        /// </summary>
+        /// <param name="fixedValue">The fixed value.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementFixedValue(
+            string fixedValue,
+            string message = null);
+
         #endregion
 
         #region ATTRIBUTE
@@ -388,6 +402,22 @@ namespace XmlFluentValidator.Abstractions
         IXmlValidatorRuleBuilder WithAttributeDocumentation(
             string name,
             string documentation);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With attribute fixed value.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="fixedValue">The fixed value.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeFixedValue(
+            string name,
+            string fixedValue,
+            string message = null);
 
         #endregion
 

@@ -84,6 +84,11 @@ namespace XmlFluentValidator.Enums
         /// </summary>
         ElementNullable,
 
+        /// <summary>
+        ///     An enum constant representing the element fixed value option.
+        /// </summary>
+        ElementFixedValue,
+
         /* Attribute rules */
         /// <summary>
         ///     An enum constant representing the attribute required option.
@@ -129,6 +134,11 @@ namespace XmlFluentValidator.Enums
         ///     An enum constant representing the attribute documentation option.
         /// </summary>
         AttributeDocumentation,
+
+        /// <summary>
+        ///     An enum constant representing the attribute fixed value option.
+        /// </summary>
+        AttributeFixedValue,
 
         /* Runtime-only */
         /// <summary>

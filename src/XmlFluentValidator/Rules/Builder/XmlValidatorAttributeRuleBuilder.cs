@@ -503,5 +503,58 @@ namespace XmlFluentValidator.Rules
 
             return this;
         }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithAttributeFixedValue(
+            string name,
+            string fixedValue,
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.AttributeFixedValue,
+                Descriptor = DefaultMessageDescriptors.AttributeFixedValidationFailed,
+                Path = _xpath,
+                AttributeName = name,
+                FixedValue = fixedValue
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    var attr = element.Attribute(name);
+                    if (attr.IsNotNull() && attr!.Value.IsPresent())
+                    {
+                        var attrValue = attr!.Value.IfNullThenEmpty();
+                        if (attrValue.IsMissing())
+                        {
+                            var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeFixedWithDataValidationFailed,
+                                MessageArguments.From(
+                                    (MessageArgs.Attribute, name),
+                                    (MessageArgs.Actual, attrValue),
+                                    (MessageArgs.Value, fixedValue)
+                                    ), _xpath);
+
+                            fails.Add(failure);
+                        }
+                    }
+                    else
+                    {
+                        var path = GetElementPath(element) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeFixedValidationFailed, path: path);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        }
     }
 }

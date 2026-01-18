@@ -507,7 +507,7 @@ namespace XmlFluentValidator.Rules
                     {
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementExactLengthWithValueValidationFailed,
                             MessageArguments.From(
-                                (MessageArgs.Value, value),
+                                (MessageArgs.Actual, value),
                                 (MessageArgs.CurrentLength, value.Length),
                                 (MessageArgs.Length, length)
                                 ), _xpath);
@@ -568,7 +568,46 @@ namespace XmlFluentValidator.Rules
                     {
                         var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementNullableWithDataValidationFailed,
                             MessageArguments.From(
-                                (MessageArgs.Value, element.Name)
+                                (MessageArgs.Element, element.Name)
+                            ), _xpath);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithElementFixedValue(
+            string fixedValue,
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.ElementFixedValue,
+                Descriptor = DefaultMessageDescriptors.ElementFixedValidationFailed,
+                Path = _xpath,
+                FixedValue= fixedValue
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    if (element.IsNull() || element.Value.IsMissing() || element.Value != fixedValue)
+                    {
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementFixedWithDataValidationFailed,
+                            MessageArguments.From(
+                                (MessageArgs.Element, element.Name),
+                                (MessageArgs.Actual, element.Value),
+                                (MessageArgs.Value, fixedValue)
                             ), _xpath);
 
                         fails.Add(failure);

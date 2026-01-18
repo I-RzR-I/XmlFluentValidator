@@ -49,6 +49,12 @@ namespace XmlFluentValidator.Helpers.Internal
 
         public const string ElementCantBeNullableAndOptional = "Element ({0}) cannot be both nillable and optional!";
         public const string ElementCantBeNullableAndEnum = "Element ({0}) cannot be nillable when enumeration is defined!";
+
+        public const string ElementFixedValueCombinedWithEnum = "Element ({0}) cannot have a fixed value combined with an enumeration!";
+        public const string ElementFixedValueCombinedWithNullable = "Element ({0}) cannot have a fixed value combined with a nullable!";
+        public const string ElementFixedValueCombinedWithOptional = "Element ({0}) cannot have a fixed value combined with an optional!";
+        public const string AttributeFixedValueCombinedWithEnum = "Attribute ({0}) cannot have a fixed value combined with an enumeration!";
+        public const string AttributeFixedValueCombinedWithOptional = "Attribute ({0}) cannot have a fixed value combined with an optional!";
     }
 }
 
