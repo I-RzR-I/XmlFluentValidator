@@ -34,6 +34,7 @@ The library combines a **fluent builder API**, runtime validation, and schema ge
 - Data type enforcement
 - Nullable (`xs:nillable`) support
 - Uniqueness constraints
+- Fixed(constant) value
 
 **Attribute Validation**
 - Required attributes
@@ -41,6 +42,7 @@ The library combines a **fluent builder API**, runtime validation, and schema ge
 - Attribute uniqueness
 - Attribute-level documentation
 - Element–attribute cross-validation
+- Fixed(constant) value
 
 **Advanced Capabilities**
 - Deeply nested paths (`/customer/address/street`)
@@ -70,6 +72,7 @@ The library combines a **fluent builder API**, runtime validation, and schema ge
 - `.WithElementValue(predicate, [message])` → Set validation rule for element value.
 - `.WithElementOptional([message])` → Specify the element validation as not required.
 - `.WithElementRequired([message])` → Set element validation rule as required.
+- `.WithElementValueRequired([message])` → Set element and value validation rule as required.
 - `.WithElementMatchesRegex(pattern, [message])` → Matches RegEx. Set element validation rule as regular expression.
 - `.WithElementInRange(min, max, [isInclusive], [message])` → In range. Set element validation rule as in range between minimum and maximum value.
 - `.WithElementUnique([message])` →  Set element validation rule as unique value.
@@ -80,10 +83,12 @@ The library combines a **fluent builder API**, runtime validation, and schema ge
 - `.WithElementExactLength(length, [message])` → With element exact length.
 - `.WithElementDocumentation(documentation)` → With element documentation. Set annotation/documentaion.
 - `.WithElementNullable([isNullable], [message])` → With element nullable.
+- `.WithElementFixedValue(fixedValue, [message])` → With element fixed(xonstant) value.
 
 **Attribute Rules**
 - `.WithAttribute(name, predicate, [message])` → Set validation rule for element attribute.
 - `.WithAttributeRequired(name, [message])` → IsRequired attribute. Set attribute validation rule as required.
+- `.WithAttributeValueRequired(name, [message])` → IsRequired attribute. Set attribute and value validation rule as required.
 - `.WithAttributeMatchesRegex(name, pattern, [message])` → Attribute matches RegEx. Set attribute validation rule as regular expression.
 - `.WithAttributeInRange(name, min, max, [isInclusive], [message])` → Attribute in range. Set attribute validation rule as in range between minimum and maximum value.
 - `.WithAttributeUnique(name, [message])` → Attribute unique. Set specific attribute as unique.
@@ -93,6 +98,7 @@ The library combines a **fluent builder API**, runtime validation, and schema ge
 - `.WithAttributeEnumerator(name, rangeEnumerator, [message])` → With attribute enumerator.
 - `.WithAttributeExactLength(name, length, [message])` → With attribute exact length.
 - `.WithAttributeDocumentation(name, documentation)` → With attribute documentation.
+- `.WithAttributeExactLength(name, fixedValue, [message])` → With attribute fixed(xonstant) value.
 
 **Messages**
 - `.WithMessage(template, arguments)` → With message. Set custom validation message.

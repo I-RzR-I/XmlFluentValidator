@@ -28,6 +28,11 @@ namespace XmlFluentValidator.Enums
         ///     An enum constant representing the element required option.
         /// </summary>
         ElementRequired,
+        
+        /// <summary>
+        ///     An enum constant representing the element value required option.
+        /// </summary>
+        ElementValueRequired,
 
         /// <summary>
         ///     An enum constant representing the element optional option.
@@ -84,11 +89,21 @@ namespace XmlFluentValidator.Enums
         /// </summary>
         ElementNullable,
 
+        /// <summary>
+        ///     An enum constant representing the element fixed value option.
+        /// </summary>
+        ElementFixedValue,
+
         /* Attribute rules */
         /// <summary>
         ///     An enum constant representing the attribute required option.
         /// </summary>
         AttributeRequired,
+        
+        /// <summary>
+        ///     An enum constant representing the attribute value required option.
+        /// </summary>
+        AttributeValueRequired,
 
         /// <summary>
         ///     An enum constant representing the attribute RegEx option.
@@ -129,6 +144,11 @@ namespace XmlFluentValidator.Enums
         ///     An enum constant representing the attribute documentation option.
         /// </summary>
         AttributeDocumentation,
+
+        /// <summary>
+        ///     An enum constant representing the attribute fixed value option.
+        /// </summary>
+        AttributeFixedValue,
 
         /* Runtime-only */
         /// <summary>

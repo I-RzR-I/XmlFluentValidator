@@ -49,7 +49,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="DomainCommonExtensions" Version="4.2.1.4986" />
+	  <PackageReference Include="DomainCommonExtensions" Version="4.4.0.8476" />
 	</ItemGroup>
 
 	<ItemGroup>

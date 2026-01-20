@@ -98,6 +98,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
             switch (step.Kind)
             {
                 case XmlValidationRuleKind.ElementRequired:
+                case XmlValidationRuleKind.ElementValueRequired:
                     element.MinOccurs = 1;
                     break;
 
@@ -137,7 +138,12 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     ApplyElementDocumentation(element, step);
                     break;
 
+                case XmlValidationRuleKind.ElementNullable:
+                    ApplyElementNullable(element, step);
+                    break;
+
                 case XmlValidationRuleKind.AttributeRequired:
+                case XmlValidationRuleKind.AttributeValueRequired:
                     ApplyAttributeRequired(element, step);
                     break;
 
@@ -169,8 +175,11 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     ApplyAttributeDocumentation(element, step);
                     break;
 
-                case XmlValidationRuleKind.ElementNullable:
-                    ApplyElementNullable(element, step);
+                case XmlValidationRuleKind.AttributeFixedValue:
+                    ApplyAttributeFixedValue(element, step);
+                    break;
+                case XmlValidationRuleKind.ElementFixedValue:
+                    ApplyElementFixedValue(element, step);
                     break;
 
                 case XmlValidationRuleKind.CustomElement:
@@ -184,6 +193,49 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                 default:
                     XException.Throw<XValidationRuleOutOfRangeException>();
                     break;
+            }
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Applies the element fixed value.
+        /// </summary>
+        /// <param name="element">The element definition.</param>
+        /// <param name="step">The xml recorded step.</param>
+        /// =================================================================================================
+        private void ApplyElementFixedValue(XsdElementModelDefinition element, XmlStepRecorder step)
+        {
+            if (step.FixedValue.IsPresent())
+            {
+                if(element.Constraints.EnumerationValues.IsNotNullOrEmptyEnumerable())
+                    XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.ElementFixedValueCombinedWithEnum, element.Name);
+                if (element.IsNullable.IsTrue())
+                    XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.ElementFixedValueCombinedWithNullable, element.Name);
+                if (element.MinOccurs.IsZero())
+                    XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.ElementFixedValueCombinedWithOptional, element.Name);
+
+                element.FixedValue = step.FixedValue;
+            }
+        }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Applies the attribute fixed value.
+        /// </summary>
+        /// <param name="element">The element definition.</param>
+        /// <param name="step">The xml recorded step.</param>
+        /// =================================================================================================
+        private void ApplyAttributeFixedValue(XsdElementModelDefinition element, XmlStepRecorder step)
+        {
+            var attr = GetOrCreateAttribute(element, step.AttributeName);
+            if (step.FixedValue.IsPresent() && attr.IsNotNull())
+            {
+                if (attr.Constraints.EnumerationValues.IsNotNullOrEmptyEnumerable())
+                    XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.AttributeFixedValueCombinedWithEnum, attr.Name);
+                if (attr.IsRequired.IsFalse())
+                    XException.Throw<XApplyInvalidOperationException>(XDefaultMessages.AttributeFixedValueCombinedWithOptional, attr.Name);
+
+                element.FixedValue = step.FixedValue;
             }
         }
 

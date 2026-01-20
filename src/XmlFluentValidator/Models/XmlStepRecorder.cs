@@ -130,7 +130,7 @@ namespace XmlFluentValidator.Models
         ///     The type of the data.
         /// </value>
         /// =================================================================================================
-        public XmlValidationDataTypeKind DataType { get; set; }
+        public XmlValidationDataTypeKind DataType { get; set; } = XmlValidationDataTypeKind.String;
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -171,5 +171,15 @@ namespace XmlFluentValidator.Models
         /// </value>
         /// =================================================================================================
         public bool? IsNullable { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     Gets or sets the fixed value.
+        /// </summary>
+        /// <value>
+        ///     The fixed value.
+        /// </value>
+        /// =================================================================================================
+        public string FixedValue { get; set; }
     }
 }

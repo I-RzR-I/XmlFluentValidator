@@ -25,13 +25,19 @@ namespace XmlFluentValidator.Helpers.Internal
     internal static class DefaultMessageDescriptors
     {
         public static readonly MessageDescriptor NodeRequired =
-            new("NODE_REQUIRED", $"IsRequired node not found at '{{{MessageArgs.Path}}}'");
+            new("NODE_REQUIRED", $"Required node not found at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor AttributeRequired =
             new("ATTR_REQUIRED", $"Attribute '{{{MessageArgs.Attribute}}}' is required at '{{{MessageArgs.Path}}}'");
 
+        public static readonly MessageDescriptor AttributeValueRequired =
+            new("ATTR_VALUE_REQUIRED", $"Attribute '{{{MessageArgs.Attribute}}}' is required at '{{{MessageArgs.Path}}}'");
+
         public static readonly MessageDescriptor ElementRequired =
             new("ELEMENT_REQUIRED", $"Element '{{{MessageArgs.Element}}}' is required at '{{{MessageArgs.Path}}}'");
+
+        public static readonly MessageDescriptor ElementValueRequired =
+            new("ELEMENT_VALUE_REQUIRED", $"Element '{{{MessageArgs.Element}}}' value is required at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor ValueMustMatchPattern =
             new("VALUE_PATTERN", $"Value '{{{MessageArgs.Actual}}}' must match pattern '{{{MessageArgs.Pattern}}}' at '{{{MessageArgs.Path}}}'");
@@ -55,16 +61,19 @@ namespace XmlFluentValidator.Helpers.Internal
             new("GENERIC_FAILED", $"Validation failed: {{{MessageArgs.Reason}}} at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor ElementMissing =
-            new("ELEMENT_MISSING", $"IsRequired element is missing at '{{{MessageArgs.Path}}}'.");
+            new("ELEMENT_MISSING", $"Required element is missing at '{{{MessageArgs.Path}}}'.");
+
+        public static readonly MessageDescriptor ElementValueMissing =
+            new("ELEMENT_VALUE_MISSING", $"Required element value is missing at '{{{MessageArgs.Path}}}'.");
 
         public static readonly MessageDescriptor AttributeMissing =
-            new("ATTRIBUTE_MISSING", "IsRequired element is missing.");
+            new("ATTRIBUTE_MISSING", "Required element is missing.");
 
         public static readonly MessageDescriptor AttributeMissingWithPath =
-            new("ATTRIBUTE_MISSING", $"IsRequired element is missing at '{{{MessageArgs.Path}}}'.");
+            new("ATTRIBUTE_MISSING", $"Required element is missing at '{{{MessageArgs.Path}}}'.");
 
         public static readonly MessageDescriptor ValueEmpty =
-            new("VALUE_EMPTY", $"IsRequired value for element '{{{MessageArgs.Element}}}' is empty at '{{{MessageArgs.Path}}}'.");
+            new("VALUE_EMPTY", $"sRequired value for element '{{{MessageArgs.Element}}}' is empty at '{{{MessageArgs.Path}}}'.");
 
         public static readonly MessageDescriptor CountFailed =
             new("COUNT_FAILED", $"Count predicate failed (count='{{{MessageArgs.Count}}}').");
@@ -94,7 +103,7 @@ namespace XmlFluentValidator.Helpers.Internal
             new("ELEMENT_ATTRIBUTE_IN_RANGE", "Value must be between in range.");
 
         public static readonly MessageDescriptor ValueIsNotInt =
-            new("VALUE_NOT_INT", "Value '{Value}' is not a valid integer.");
+            new("VALUE_NOT_INT", $"Value '{{{MessageArgs.Value}}}' is not a valid integer.");
 
         public static readonly MessageDescriptor ElementUniqueDuplicateFailed =
             new("ELEMENT_UNIQUE_FAILED", $"Duplicate values found: '{{{MessageArgs.Duplicates}}}'");
@@ -178,7 +187,7 @@ namespace XmlFluentValidator.Helpers.Internal
             new("ELEMENT_EXACT_LENGTH_FAILED", "The element value length validation failed.");
 
         public static readonly MessageDescriptor ElementExactLengthWithValueValidationFailed =
-            new("ELEMENT_EXACT_LENGTH_WITH_DATA_FAILED", $"The element value {{{MessageArgs.Value}}} have different length {{{MessageArgs.CurrentLength}}} that is excepted ({{{MessageArgs.Length}}}).");
+            new("ELEMENT_EXACT_LENGTH_WITH_DATA_FAILED", $"The element value {{{MessageArgs.Actual}}} have different length {{{MessageArgs.CurrentLength}}} that is excepted ({{{MessageArgs.Length}}}).");
 
         public static readonly MessageDescriptor AttributeExactLengthValidationFailed =
             new("ATTRIBUTE_EXACT_LENGTH_FAILED", "The attribute value length validation failed.");
@@ -190,6 +199,18 @@ namespace XmlFluentValidator.Helpers.Internal
             new("ELEMENT_NULLABLE_FAILED", "The element nullable (nil/nillable) validation failed.");
 
         public static readonly MessageDescriptor ElementNullableWithDataValidationFailed =
-            new("ELEMENT_NULLABLE_WITH_DATA_FAILED", $"The element {{{MessageArgs.Value}}} nullable (nil/nillable) validation failed.");
+            new("ELEMENT_NULLABLE_WITH_DATA_FAILED", $"The element {{{MessageArgs.Element}}} nullable (nil/nillable) validation failed.");
+
+        public static readonly MessageDescriptor ElementFixedValidationFailed =
+            new("ELEMENT_FIXED_VALUE_FAILED", "The element with fixed value validation failed.");
+
+        public static readonly MessageDescriptor ElementFixedWithDataValidationFailed =
+            new("ELEMENT_FIXED_VALUE_WITH_DATA_FAILED", $"The element {{{MessageArgs.Element}}} with value {{{MessageArgs.Actual}}}, fixed value {{{MessageArgs.Value}}} validation failed.");
+
+        public static readonly MessageDescriptor AttributeFixedValidationFailed =
+            new("ATTRIBUTE_FIXED_VALUE_FAILED", "The attribute with fixed value validation failed.");
+
+        public static readonly MessageDescriptor AttributeFixedWithDataValidationFailed =
+            new("ATTRIBUTE_FIXED_VALUE_WITH_DATA_FAILED", $"The attribute {{{MessageArgs.Attribute}}} with value {{{MessageArgs.Actual}}}, fixed value {{{MessageArgs.Value}}} validation failed.");
     }
 }

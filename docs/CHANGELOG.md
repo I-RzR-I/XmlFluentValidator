@@ -1,3 +1,8 @@
+### **v1.0.0-rc.2** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 20-01-2025
+-> [DEV] - Add the `fixed` element/attribute validation and xsd emit. <br />
+-> [DEV] - Adjust the element/attribute `Required` to the element and element with value validation. <br />
+-> [DEV] - Adjust the docs from the readme and using.
+
 ### **v1.0.0-rc.1** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 10-01-2025
 -> [DEV] - Add the `null` (`nil`) element validation and xsd emit. <br />
 -> [DEV] - Adjust the docs from readme and using.

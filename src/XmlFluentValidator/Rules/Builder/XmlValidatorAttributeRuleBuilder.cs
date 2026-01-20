@@ -96,6 +96,48 @@ namespace XmlFluentValidator.Rules
                 foreach (var e in elems)
                 {
                     var attr = e.Attribute(name);
+                    if (attr.IsNull())
+                    {
+                        var path = GetElementPath(e) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeValueRequired,
+                            MessageArguments.From(
+                                (MessageArgs.Attribute, name),
+                                (MessageArgs.Path, path)), path);
+
+                        fails.Add(failure);
+
+                        if (_stopOnFailure)
+                            break;
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithAttributeValueRequired(
+            string name,
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder()
+            {
+                Kind = XmlValidationRuleKind.AttributeValueRequired,
+                AttributeName = name,
+                Descriptor = DefaultMessageDescriptors.AttributeMissing,
+                Path = _xpath
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var e in elems)
+                {
+                    var attr = e.Attribute(name);
                     if (attr.IsNull() || attr!.Value.IsMissing())
                     {
                         var path = GetElementPath(e) + "/@" + name;
@@ -499,6 +541,59 @@ namespace XmlFluentValidator.Rules
                 Path = _xpath,
                 AttributeName = name,
                 AnnotationDocumentation = documentation
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithAttributeFixedValue(
+            string name,
+            string fixedValue,
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder
+            {
+                Kind = XmlValidationRuleKind.AttributeFixedValue,
+                Descriptor = DefaultMessageDescriptors.AttributeFixedValidationFailed,
+                Path = _xpath,
+                AttributeName = name,
+                FixedValue = fixedValue
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var element in elems)
+                {
+                    var attr = element.Attribute(name);
+                    if (attr.IsNotNull() && attr!.Value.IsPresent())
+                    {
+                        var attrValue = attr!.Value.IfNullThenEmpty();
+                        if (attrValue.IsMissing())
+                        {
+                            var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeFixedWithDataValidationFailed,
+                                MessageArguments.From(
+                                    (MessageArgs.Attribute, name),
+                                    (MessageArgs.Actual, attrValue),
+                                    (MessageArgs.Value, fixedValue)
+                                    ), _xpath);
+
+                            fails.Add(failure);
+                        }
+                    }
+                    else
+                    {
+                        var path = GetElementPath(element) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeFixedValidationFailed, path: path);
+
+                        fails.Add(failure);
+                    }
+                }
+
+                return fails;
             });
 
             return this;

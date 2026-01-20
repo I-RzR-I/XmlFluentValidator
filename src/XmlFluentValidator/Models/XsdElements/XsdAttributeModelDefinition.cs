@@ -80,6 +80,16 @@ namespace XmlFluentValidator.Models.XsdElements
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
+        ///     Gets or sets the fixed value.
+        /// </summary>
+        /// <value>
+        ///     The fixed value.
+        /// </value>
+        /// =================================================================================================
+        public string FixedValue { get; set; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
         ///     Initializes a new instance of the <see cref="XsdAttributeModelDefinition"/> class.
         /// </summary>
         /// =================================================================================================
