@@ -96,6 +96,48 @@ namespace XmlFluentValidator.Rules
                 foreach (var e in elems)
                 {
                     var attr = e.Attribute(name);
+                    if (attr.IsNull())
+                    {
+                        var path = GetElementPath(e) + "/@" + name;
+                        var failure = BuildFailureMessage(message, DefaultMessageDescriptors.AttributeValueRequired,
+                            MessageArguments.From(
+                                (MessageArgs.Attribute, name),
+                                (MessageArgs.Path, path)), path);
+
+                        fails.Add(failure);
+
+                        if (_stopOnFailure)
+                            break;
+                    }
+                }
+
+                return fails;
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithAttributeValueRequired(
+            string name,
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder()
+            {
+                Kind = XmlValidationRuleKind.AttributeValueRequired,
+                AttributeName = name,
+                Descriptor = DefaultMessageDescriptors.AttributeMissing,
+                Path = _xpath
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath);
+                var fails = new List<FailureMessageDescriptor>();
+                foreach (var e in elems)
+                {
+                    var attr = e.Attribute(name);
                     if (attr.IsNull() || attr!.Value.IsMissing())
                     {
                         var path = GetElementPath(e) + "/@" + name;

@@ -25,19 +25,20 @@ var result = validator.Validate(xmlDocument);
 | `.WithElementMustExist([message])`                        | The element must exist.                                                             | `.ForPath("items/item").WithElementMustExist()`                     |
 | `.WithElementOptional([message])`                         | Marks element as optional. Generates `minOccurs="0"`.                               | `.ForPath("customer/phone").WithElementOptional()`                  |
 | `.WithElementRequired([message])`                         | Marks element as mandatory. Generates `minOccurs="1"`.                              | `.ForPath("id").WithElementRequired()`                              |
+| `.WithElementValueRequired([message])`                    | Marks element and value as mandatory. Generates `minOccurs="1"`.                    | `.ForPath("id").WithElementValueRequired()`                         |
 | `.WithElementCount(predicate, [message])`                 | Limits how many times an element can appear (runtime).                              | `.ForPath("items/item").WithElementCount(c => c <= 5)`              |
 | `.WithElementMaxOccurs(max, [message])`                   | Limits element occurrences. Generates `maxOccurs`.                                  | `.ForPath("items/item").WithElementMaxOccurs(10)`                   |
 | `.WithElementValue(predicate, [message])`                 | Validates element text value.                                                       | `.ForPath("email").WithElementValue(v => v.Contains("@"))`          |
 | `.WithElementMatchesRegex(pattern, [message])`            | Validates element text using regex. Generates `<xs:pattern>`.                       | `.ForPath("email").WithElementMatchesRegex(@"^\S+@\S+\.\S+$")`      |
 | `.WithElementInRange(min, max, [isInclusive], [message])` | Validates numeric value range. Generates `<xs:minInclusive>` / `<xs:maxInclusive>`. | `.ForPath("age").WithElementInRange(18, 65)`                        |
 | `.WithElementValueLength(min, [max], [message])`          | Validates string length. Generates `<xs:minLength>` / `<xs:maxLength>`.             | `.ForPath("code").WithElementValueLength(3, 10)`                    |
-| `.WithElementExactLength(length, [message])`              |  Enforces exact string length. Generates `<xs:length>`. | `.ForPath("countryCode").WithElementExactLength(2)`                 |
-| `.WithElementUnique([message])`                           | Ensures unique values within scope.                         | `.ForPath("items/item/code").WithElementUnique()`                   |
+| `.WithElementExactLength(length, [message])`              | Enforces exact string length. Generates `<xs:length>`. 							  | `.ForPath("countryCode").WithElementExactLength(2)`                 |
+| `.WithElementUnique([message])`                           | Ensures unique values within scope.                         						  | `.ForPath("items/item/code").WithElementUnique()`                   |
 | `.WithElementDataType(type, [message])`                   | Enforces XSD data type.                                                             | `.ForPath("createdAt").WithElementDataType(XmlDataType.DateTime)`   |
 | `.WithElementEnumerator(values, [message])`               | Restricts values to enumeration. Generates `<xs:enumeration>`.                      | `.ForPath("status").WithElementEnumerator(new[] { "New", "Paid" })` |
 | `.WithElementNullable([isNullable], [message])`           | Controls `xs:nillable`.                                                             | `.ForPath("description").WithElementNullable(true)`                 |
 | `.WithElementDocumentation(text)`                         | Adds `<xs:annotation>` documentation.                                               | `.ForPath("id").WithElementDocumentation("Order identifier")`       |
-| `.WithElementFixedValue(fixedValue, [message])`                         | Adds `<xs:fixed>` fixed value restrinction.                                               | `.ForPath("Order/StoreName").WithElementFixedValue("STOREX")`       |
+| `.WithElementFixedValue(fixedValue, [message])`           | Adds `<xs:fixed>` fixed value restrinction.                                         | `.ForPath("Order/StoreName").WithElementFixedValue("STOREX")`       |
 
 ### Attribute Rules
 
@@ -45,15 +46,16 @@ var result = validator.Validate(xmlDocument);
 | ----------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | `.WithAttribute(name, predicate, [message])`                      | Adds a custom validation rule for attribute value.          | `.ForPath("item").WithAttribute("sku", v => !string.IsNullOrEmpty(v))`         |
 | `.WithAttributeRequired(name, [message])`                         | Attribute must exist. Generates `use="required"`.           | `.ForPath("item").WithAttributeRequired("sku")`                                |
+| `.WithAttributeValueRequired(name, [message])`                    | Attribute and value must exist. Generates `use="required"`. | `.ForPath("item").WithAttributeValueRequired("sku")`                           |
 | `.WithAttributeMatchesRegex(name, pattern, [message])`            | Attribute value must match regex. Generates `<xs:pattern>`. | `.ForPath("item@sku").WithAttributeMatchesRegex("sku", @"^[A-Z]{3}-\d{3}$")`   |
 | `.WithAttributeInRange(name, min, max, [isInclusive], [message])` | Attribute numeric value must be within range.               | `.ForPath("item@qty").WithAttributeInRange("qty", 1, 100)`                     |
 | `.WithAttributeValueLength(name, min, [max], [message])`          | Validates attribute string length.                          | `.ForPath("item@sku").WithAttributeValueLength("sku", 5, 10)`                  |
 | `.WithAttributeExactLength(name, length, [message])`              | Enforces exact attribute length.                            | `.ForPath("item@cc").WithAttributeExactLength("cc", 2)`                        |
-| `.WithAttributeUnique(name, [message])`                           | Attribute values must be unique. | `.ForPath("item@sku").WithAttributeUnique("sku")`                              |
+| `.WithAttributeUnique(name, [message])`                           | Attribute values must be unique. 							  | `.ForPath("item@sku").WithAttributeUnique("sku")`                  			   |
 | `.WithAttributeDataType(name, type, [message])`                   | Enforces attribute XSD data type.                           | `.ForPath("item@qty").WithAttributeDataType("qty", XmlDataType.Int)`           |
 | `.WithAttributeEnumerator(name, values, [message])`               | Restricts attribute values to enumeration.                  | `.ForPath("item@type").WithAttributeEnumerator("type", new[] { "A", "B" })`    |
 | `.WithAttributeDocumentation(name, text)`                         | Adds documentation to attribute in XSD.                     | `.ForPath("item@sku").WithAttributeDocumentation("sku", "Stock keeping unit")` |
-| `.WithAttributeFixedValue(name, fixedValue, [message])`                         | Adds `<xs:fixed>` fixed value restrinction.                                               | `.ForPath("Order/StoreName").WithAttributeFixedValue("id", "xsd123")`       |
+| `.WithAttributeFixedValue(name, fixedValue, [message])`           | Adds `<xs:fixed>` fixed value restrinction.                 | `.ForPath("Order/StoreName").WithAttributeFixedValue("id", "xsd123")`          |
 
 ### Collection & Logical Rules
 

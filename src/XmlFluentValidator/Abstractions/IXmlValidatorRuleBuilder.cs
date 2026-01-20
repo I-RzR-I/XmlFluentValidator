@@ -97,6 +97,17 @@ namespace XmlFluentValidator.Abstractions
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
+        ///     With element value required.
+        /// </summary>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithElementValueRequired(string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
         ///     Matches RegEx.
         ///     Set element validation rule as regular expression.
         /// </summary>
@@ -270,6 +281,18 @@ namespace XmlFluentValidator.Abstractions
         /// </returns>
         /// =================================================================================================
         IXmlValidatorRuleBuilder WithAttributeRequired(string name, string message = null);
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     With attribute value required.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="message">(Optional) The message.</param>
+        /// <returns>
+        ///     An IXmlValidatorRuleBuilder.
+        /// </returns>
+        /// =================================================================================================
+        IXmlValidatorRuleBuilder WithAttributeValueRequired(string name, string message = null);
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>

@@ -25,13 +25,19 @@ namespace XmlFluentValidator.Helpers.Internal
     internal static class DefaultMessageDescriptors
     {
         public static readonly MessageDescriptor NodeRequired =
-            new("NODE_REQUIRED", $"IsRequired node not found at '{{{MessageArgs.Path}}}'");
+            new("NODE_REQUIRED", $"Required node not found at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor AttributeRequired =
             new("ATTR_REQUIRED", $"Attribute '{{{MessageArgs.Attribute}}}' is required at '{{{MessageArgs.Path}}}'");
 
+        public static readonly MessageDescriptor AttributeValueRequired =
+            new("ATTR_VALUE_REQUIRED", $"Attribute '{{{MessageArgs.Attribute}}}' is required at '{{{MessageArgs.Path}}}'");
+
         public static readonly MessageDescriptor ElementRequired =
             new("ELEMENT_REQUIRED", $"Element '{{{MessageArgs.Element}}}' is required at '{{{MessageArgs.Path}}}'");
+
+        public static readonly MessageDescriptor ElementValueRequired =
+            new("ELEMENT_VALUE_REQUIRED", $"Element '{{{MessageArgs.Element}}}' value is required at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor ValueMustMatchPattern =
             new("VALUE_PATTERN", $"Value '{{{MessageArgs.Actual}}}' must match pattern '{{{MessageArgs.Pattern}}}' at '{{{MessageArgs.Path}}}'");
@@ -55,16 +61,19 @@ namespace XmlFluentValidator.Helpers.Internal
             new("GENERIC_FAILED", $"Validation failed: {{{MessageArgs.Reason}}} at '{{{MessageArgs.Path}}}'");
 
         public static readonly MessageDescriptor ElementMissing =
-            new("ELEMENT_MISSING", $"IsRequired element is missing at '{{{MessageArgs.Path}}}'.");
+            new("ELEMENT_MISSING", $"Required element is missing at '{{{MessageArgs.Path}}}'.");
+
+        public static readonly MessageDescriptor ElementValueMissing =
+            new("ELEMENT_VALUE_MISSING", $"Required element value is missing at '{{{MessageArgs.Path}}}'.");
 
         public static readonly MessageDescriptor AttributeMissing =
-            new("ATTRIBUTE_MISSING", "IsRequired element is missing.");
+            new("ATTRIBUTE_MISSING", "Required element is missing.");
 
         public static readonly MessageDescriptor AttributeMissingWithPath =
-            new("ATTRIBUTE_MISSING", $"IsRequired element is missing at '{{{MessageArgs.Path}}}'.");
+            new("ATTRIBUTE_MISSING", $"Required element is missing at '{{{MessageArgs.Path}}}'.");
 
         public static readonly MessageDescriptor ValueEmpty =
-            new("VALUE_EMPTY", $"IsRequired value for element '{{{MessageArgs.Element}}}' is empty at '{{{MessageArgs.Path}}}'.");
+            new("VALUE_EMPTY", $"sRequired value for element '{{{MessageArgs.Element}}}' is empty at '{{{MessageArgs.Path}}}'.");
 
         public static readonly MessageDescriptor CountFailed =
             new("COUNT_FAILED", $"Count predicate failed (count='{{{MessageArgs.Count}}}').");

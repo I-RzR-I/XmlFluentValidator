@@ -130,7 +130,7 @@ namespace XmlFluentValidator.Models
         ///     The type of the data.
         /// </value>
         /// =================================================================================================
-        public XmlValidationDataTypeKind DataType { get; set; }
+        public XmlValidationDataTypeKind DataType { get; set; } = XmlValidationDataTypeKind.String;
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>

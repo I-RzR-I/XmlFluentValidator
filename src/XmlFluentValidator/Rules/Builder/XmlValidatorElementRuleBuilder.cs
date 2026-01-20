@@ -158,6 +158,35 @@ namespace XmlFluentValidator.Rules
                         MessageArguments.From((MessageArgs.Path, _xpath)));
                     fails.Add(failure);
                 }
+
+                return fails;
+            });
+
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IXmlValidatorRuleBuilder WithElementValueRequired(
+            string message = null)
+        {
+            var rule = _validator.CurrentRule;
+            rule.RecordedSteps.Add(new XmlStepRecorder()
+            {
+                Kind = XmlValidationRuleKind.ElementValueRequired,
+                Descriptor = DefaultMessageDescriptors.ElementRequired,
+                Path = _xpath
+            });
+
+            _steps.Add(doc =>
+            {
+                var elems = doc.XPathSelectElements(_xpath).ToList();
+                var fails = new List<FailureMessageDescriptor>();
+                if (elems.IsNullOrEmptyEnumerable())
+                {
+                    var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementValueMissing,
+                        MessageArguments.From((MessageArgs.Path, _xpath)));
+                    fails.Add(failure);
+                }
                 else
                 {
                     foreach (var e in elems)
@@ -166,7 +195,7 @@ namespace XmlFluentValidator.Rules
                         if (val.IsMissing())
                         {
                             var path = GetElementPath(e);
-                            var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementRequired,
+                            var failure = BuildFailureMessage(message, DefaultMessageDescriptors.ElementValueRequired,
                                 MessageArguments.From(
                                     (MessageArgs.Element, e.Name.LocalName),
                                     (MessageArgs.Path, path)), path);

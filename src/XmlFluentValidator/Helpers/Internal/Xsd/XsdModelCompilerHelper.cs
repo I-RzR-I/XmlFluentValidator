@@ -98,6 +98,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
             switch (step.Kind)
             {
                 case XmlValidationRuleKind.ElementRequired:
+                case XmlValidationRuleKind.ElementValueRequired:
                     element.MinOccurs = 1;
                     break;
 
@@ -142,6 +143,7 @@ namespace XmlFluentValidator.Helpers.Internal.Xsd
                     break;
 
                 case XmlValidationRuleKind.AttributeRequired:
+                case XmlValidationRuleKind.AttributeValueRequired:
                     ApplyAttributeRequired(element, step);
                     break;
 

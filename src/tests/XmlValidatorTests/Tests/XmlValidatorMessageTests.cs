@@ -342,7 +342,7 @@ namespace XmlValidatorTests.Tests
             var validator = new XmlValidator()
                 .ForPath("/order/customer/id").WithMessage("Temp")
                 .WithMessageForAll("Id is not valid")
-                .WithElementRequired("Req message").WithMessage("Req with message")
+                .WithElementValueRequired("Req message").WithMessage("Req with message")
                 .WithElementValue(val =>
                 {
                     var isNumber = int.TryParse(val, out _);
